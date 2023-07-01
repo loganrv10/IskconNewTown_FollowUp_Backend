@@ -13,7 +13,7 @@ mongoose.connect(DB, {
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'Connection error:'));
 db.once('open', () => {
-  console.log('Connected to the User Database.');
+  console.log('Connected to the User Database.'); 
 });
 
 //User Schema
@@ -41,11 +41,11 @@ const userSchema=mongoose.Schema({
        required:[true,"This Field is Required"]
     },
     registered_by:{
-      type:String,
+      type:Object,
       required:[true,"This Field is Required"]  
     },
     handled_by:{
-       type:String 
+       type:Object 
     },
     grade:{
         type:String
@@ -53,6 +53,9 @@ const userSchema=mongoose.Schema({
     status:{
        type:String,
        required:[true,"This Field is Required"]
+    },
+    creted_at:{
+      type:String
     }
 });
 

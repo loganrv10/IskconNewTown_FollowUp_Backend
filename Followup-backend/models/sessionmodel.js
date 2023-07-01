@@ -13,7 +13,7 @@ mongoose.connect(DB, {
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'Connection error:'));
 db.once('open', () => {
-  console.log('Connected to the Session Database.');
+  console.log('Connected to the Session Database.');  
 });
 
 //User Schema
@@ -31,8 +31,10 @@ const sessionSchema=mongoose.Schema({
        required:[true,"This Field is Required"]
     },
     speaker:{
-      type:String,
-      required:[true,"This Field is Required"]  
+      type:String  
+    },
+    desc:{
+      type:String  
     }
 });
   

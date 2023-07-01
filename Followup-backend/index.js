@@ -21,11 +21,14 @@ app.use('/admin',adminrouter);
 const sessionrouter=require('./routers/sessionrouter');
 app.use('/session',sessionrouter);
 
-// const chapterrouter=require('./routers/chapterrouter');
-// app.use('/chapter',chapterrouter);
+const attendancerouter=require('./routers/attendancerouter');
+app.use('/attendance',attendancerouter);
 
-//static image folder
-// app.use('/public',express.static('./public'));
+const remarkrouter=require('./routers/remarkrouter');
+app.use('/remark',remarkrouter);
+
+// static image folder
+app.use('/public',express.static('./public'));
 
 app.listen(port,(err)=>{
     if(err){

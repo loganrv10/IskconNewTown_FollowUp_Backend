@@ -2,9 +2,10 @@ const express=require('express');
 const usermodel=require('../models/usermodel');
 
 // Add Devotee
-module.exports.addDevotee=async function addDevotee(req,res){
+module.exports.addDevotee=async function addDevotee(req,res){ 
 try{
     let obj=req.body;
+    console.log("Yes");
     console.log(obj);
     let user=await usermodel.create(obj);
     console.log(user);
@@ -67,6 +68,9 @@ try{
         filterValue=parseInt(filterValue);
         filterQuery = { [filterKey]: filterValue };
     }
+    else if(filterKey && filterKey=="creted_at"){
+        filterQuery = { [filterKey]: filterValue };
+    }
     else if(filterKey){
         const pattern = new RegExp(filterValue, 'i');
         filterQuery = { [filterKey]: { $regex: pattern } };
@@ -76,14 +80,20 @@ try{
     let totalCount;
     let devotee;
 
-    if(search){
-       const pattern = new RegExp(search, 'i');
-       devotee=await usermodel.find({$or: [{name:pattern}, {phone:pattern}, {registered_by:pattern}]}).skip(skip).limit(limit);
-       totalCount= await usermodel.find({$or: [{name:pattern}, {phone:pattern}, {registered_by:pattern}]}).countDocuments();
+    if(search && filterQuery && filterQuery){
+       const pattern = new RegExp('^' +search, 'i');
+       devotee=await usermodel.find(filterQuery).find({$or: [{name:pattern}, {phone:pattern}, {"registered_by.name":pattern},{"handled_by.name":pattern}]}).skip(skip).limit(limit);
+       totalCount= await usermodel.find(filterQuery).find({$or: [{name:pattern}, {phone:pattern}, {"registered_by.name":pattern},{"handled_by.name":pattern}]}).countDocuments();
+    }
+    else if(search){
+       const pattern = new RegExp('^' +search, 'i');  
+       console.log(pattern);
+       devotee=await usermodel.find({$or: [{name:pattern}, {phone:pattern}, {"registered_by.name":pattern},{"handled_by.name":pattern}]}).skip(skip).limit(limit);
+       totalCount= await usermodel.find({$or: [{name:pattern}, {phone:pattern}, {"registered_by.name":pattern},{"handled_by.name":pattern}]}).countDocuments();
     }
     else{
-       devotee=await usermodel.find(filterQuery).skip(skip).limit(limit);
-       totalCount= await usermodel.find(filterQuery).countDocuments(); 
+        devotee=await usermodel.find(filterQuery).skip(skip).limit(limit);
+        totalCount= await usermodel.find(filterQuery).countDocuments(); 
     }
     if(devotee){
         res.status(200).send({
@@ -116,7 +126,31 @@ try{
     }
     else{
         res.status(422).send({
-            data:"error while fetching sloka" 
+            data:"error while fetching Devotee Details" 
+        });
+    }
+}
+catch(err){
+   res.status(422).send({
+       data:err,
+   });
+}
+}
+
+//get Detail of Particular Devotee by Phone Number
+module.exports.devoteeDetailsByPhone=async function devoteeDetailsByPhone(req,res){
+try{
+    console.log(req.query);
+    let phone=req.query.phone; 
+    let user=await usermodel.find({phone:phone},{name:1,phone:1,level:1,handled_by:1});
+    if(user?.length!=0){
+        res.status(200).send({  
+            data:user
+        });
+    }
+    else{
+        res.status(404).send({
+            data:"Devotee does not Exist" 
         });
     }
 }
@@ -171,6 +205,93 @@ try{
     else{
         res.status(422).send({
             data:"error while updating Devotee"
+        });
+    }
+}
+catch(err){
+   res.status(422).send({
+       data:err,
+   });
+}
+}
+
+//Assign multiple Devotee to Cordinator
+module.exports.updateDevoteeCordinator=async function updateDevoteeCordinator(req,res){
+try{
+    let obj=req.body;
+    let userIds=obj.id;
+    let cordinator=obj.cordinator;
+    let users=await usermodel.updateMany({_id:{ $in: userIds }},{ $set:{handled_by:cordinator} },{new:true});
+    console.log(users);
+    if(users){
+        res.status(200).send({
+            data:users
+        });
+    }
+    else{
+        res.status(422).send({
+            data:"error while assigning Devotee"
+        });
+    }
+}
+catch(err){
+   res.status(422).send({
+       data:err,
+   });
+}
+}
+
+//get All DevoteeList of Cordinator
+module.exports.allDevoteeOfCordinator=async function allDevotee(req,res){
+try{
+    console.log(req.query);
+    let limit =req.query.limit?parseInt(req.query.limit):5;
+    let page = req.query.page?parseInt(req.query.page):1;
+    let filterKey=req.query.filterkey?req.query.filterkey:null;
+    let filterValue=req.query.filtervalue?req.query.filtervalue:null;
+    let search=req.query.search?req.query.search:null;
+    let cord=req.query.cord;
+    let filterQuery;
+    if(filterKey && filterKey=="level"){
+        filterValue=parseInt(filterValue);
+        filterQuery = { [filterKey]: filterValue };
+    }
+    else if(filterKey && filterKey=="creted_at"){
+        filterQuery = { [filterKey]: filterValue };
+    }
+    else if(filterKey){
+        const pattern = new RegExp(filterValue, 'i');
+        filterQuery = { [filterKey]: { $regex: pattern } };
+    }
+    let skip=(page-1)*limit;
+
+    let totalCount;
+    let devotee;
+
+    if(search && filterQuery && filterQuery){
+       const pattern = new RegExp('^' +search, 'i');
+       devotee=await usermodel.find({"handled_by.id":cord}).find(filterQuery).find({$or: [{name:pattern}, {phone:pattern}, {"registered_by.name":pattern},{"handled_by.name":pattern}]}).skip(skip).limit(limit);
+       totalCount= await usermodel.find({"handled_by.id":cord}).find(filterQuery).find({$or: [{name:pattern}, {phone:pattern}, {"registered_by.name":pattern},{"handled_by.name":pattern}]}).countDocuments();
+    }
+    else if(search){
+       const pattern = new RegExp('^' +search, 'i');  
+       console.log(pattern);
+       devotee=await usermodel.find({"handled_by.id":cord}).find({$or: [{name:pattern}, {phone:pattern}, {"registered_by.name":pattern},{"handled_by.name":pattern}]}).skip(skip).limit(limit);
+       totalCount= await usermodel.find({"handled_by.id":cord}).find({$or: [{name:pattern}, {phone:pattern}, {"registered_by.name":pattern},{"handled_by.name":pattern}]}).countDocuments();
+    }
+    else{
+        devotee=await usermodel.find({"handled_by.id":cord}).find(filterQuery).skip(skip).limit(limit);
+        totalCount= await usermodel.find({"handled_by.id":cord}).find(filterQuery).countDocuments(); 
+    }
+    if(devotee){
+        res.status(200).send({
+            data:devotee,
+            count:totalCount
+        });
+    }
+    else{
+        res.status(422).send({
+            data:"error while fetching devotee list"
         });
     }
 }

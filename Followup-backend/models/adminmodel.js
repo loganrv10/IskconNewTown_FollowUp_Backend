@@ -1,6 +1,6 @@
 const mongoose=require('mongoose');
 const validator = require('validator');
-const bcrypt=require('bcrypt');
+const bcrypt=require('bcryptjs');
 const Crypto = require("crypto");
 const { stringify } = require('querystring');
 
@@ -70,19 +70,16 @@ const adminSchema=mongoose.Schema({
        type:Number,
        required:[true,"This Field is Required"]
     },
-    registered_by:{
-      type:String,
-      required:[true,"This Field is Required"]  
-    },
-    handled_by:{
-       type:String 
-    },
     status:{
        type:String,
        required:[true,"This Field is Required"]
     },
-    devotees:{
-        type:Array
+    isActive:{
+        type:Boolean,
+        required:[true,"This Field is Required"]
+    },
+    creted_at:{
+      type:String
     },
     resetToken:{
         type:String
@@ -101,6 +98,7 @@ adminSchema.post('save', function(error, doc, next) {
 adminSchema.pre('save',function(){
     if(this.confirmedPassword){
        this.confirmedPassword=undefined;
+       this.isActive=true;
     }
 });
   
@@ -125,17 +123,6 @@ adminSchema.methods.resetpasswordhandler=function(password,confirmedpassword){
     this.resetToken=undefined;
 };
 
-adminSchema.pre('save',function(){
-    this.confirmedPassword=undefined;
-});
-  
-adminSchema.pre('save',async function(){
-    let salt=await bcrypt.genSalt();
-    let hashedstring=await bcrypt.hash(this.password,salt);
-    this.password=hashedstring;
-});
-
-  
 const adminmodel=mongoose.model('admins',adminSchema);
 
 module.exports=adminmodel;

@@ -1,70 +1,73 @@
-const express=require('express');
-const adminmodel=require('../models/adminmodel');
-const {sendmail} =require("../emailUtility/nodeMailer");
+const express = require("express");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const adminmodel = require("../models/adminmodel");
+const { sendmail } = require("../emailUtility/nodeMailer");
+
+const dotenv = require("dotenv");
+dotenv.config();
+const jwt_key = process.env.key;
 
 // Add Cordinator
-module.exports.addCordinate=async function addCordinate(req,res){
-try{
-    let obj=req.body;
-    // console.log(obj);
-    let user=await adminmodel.create(obj);
-    if(user){
-        const resetToken=user.createReastToken();
-        await user.save();
-        //http://abcd.com/resetpassword/resetToken
-        let resetPasswordLink=`${req.protocol}://${req.get('host')}/admin/resetpassword/${resetToken}`;
-        user.resetPasswordLink=resetPasswordLink;
-        let mailConfirmation=await sendmail("resetpassword",user);
-        console.log(mailConfirmation);
-        res.status(200).send({
-            data:user,
-            mailStatus:mailConfirmation.data
-        });
+module.exports.addCordinate = async function addCordinate(req, res) {
+  try {
+    let obj = req.body;
+    console.log(obj);
+    obj.isActive=false;
+    obj.role="cordinator"
+    let user = await adminmodel.create(obj);
+    if (user) {
+      const resetToken = user.createReastToken();
+      let resetPasswordLink = `${req.protocol}://localhost:3000/reset-password/${resetToken}`;
+      user.resetPasswordLink = resetPasswordLink;
+      await user.save();
+      let mailConfirmation = await sendmail("resetpasswordself",user);
+      console.log(mailConfirmation);
+      res.status(200).send({
+        data: user,
+        mailStatus: mailConfirmation.data,
+      });
+    } else {
+      res.status(422).send({
+        data: "error while adding User",
+        mailStatus: mailConfirmation.data,
+      });
     }
-    else{
-        res.status(422).send({
-            data:"error while adding User",
-            mailStatus:mailConfirmation.data
-        });
-    }
-}
-catch(err){
-   res.status(422).send({
-       data:err,
-   });
-}
-}
+  } catch (err) {
+    res.status(422).send({
+      data: err,
+    });
+  }
+};
 
 //Update Devotee
-module.exports.updateCordinate=async function updateCordinate(req,res){
-try{
-    let obj=req.body;
+module.exports.updateCordinate = async function updateCordinate(req, res) {
+  try {
+    let obj = req.body;
     console.log(obj);
-    let id=req.params.id;
+    let id = req.params.id;
 
-    let user=await adminmodel.updateOne({_id:id},obj,{new:true});
+    let user = await adminmodel.updateOne({ _id: id }, obj, { new: true });
     console.log(user);
-    if(user){
-        res.status(200).send({
-            data:user
-        });
+    if (user) {
+      res.status(200).send({
+        data: user,
+      });
+    } else {
+      res.status(422).send({
+        data: "error while updating Cordinator",
+      });
     }
-    else{
-        res.status(422).send({
-            data:"error while updating Cordinator"
-        });
-    }
-}
-catch(err){
-   res.status(422).send({
-       data:err,
-   });
-}
-}
+  } catch (err) {
+    res.status(422).send({
+      data: err,
+    });
+  }
+};
 
 //get All DevoteeList
-module.exports.allCordinate=async function allCordinate(req,res){
-try{
+module.exports.allCordinate = async function allCordinate(req, res) {
+  try{
     console.log(req.query);
     let limit =req.query.limit?parseInt(req.query.limit):5;
     let page = req.query.page?parseInt(req.query.page):1;
@@ -76,6 +79,9 @@ try{
         filterValue=parseInt(filterValue);
         filterQuery = { [filterKey]: filterValue };
     }
+    else if(filterKey && filterKey=="creted_at"){
+        filterQuery = { [filterKey]: filterValue };
+    }
     else if(filterKey){
         const pattern = new RegExp(filterValue, 'i');
         filterQuery = { [filterKey]: { $regex: pattern } };
@@ -83,20 +89,26 @@ try{
     let skip=(page-1)*limit;
 
     let totalCount;
-    let cordinate;
+    let devotee;
 
-    if(search){
-       const pattern = new RegExp(search, 'i');
-       cordinate=await adminmodel.find({$or: [{name:pattern}, {phone:pattern}, {registered_by:pattern}]}).skip(skip).limit(limit);
-       totalCount= await adminmodel.find({$or: [{name:pattern}, {phone:pattern}, {registered_by:pattern}]}).countDocuments();
+    if(search && filterQuery && filterQuery){
+       const pattern = new RegExp('^' +search, 'i');
+       devotee=await adminmodel.find(filterQuery).find({$or: [{name:pattern}, {phone:pattern}, {email:pattern}]}).skip(skip).limit(limit);
+       totalCount= await adminmodel.find(filterQuery).find({$or: [{name:pattern}, {phone:pattern}, {email:pattern}]}).countDocuments();
+    }
+    else if(search){
+       const pattern = new RegExp('^' +search, 'i');
+       console.log(pattern);
+       devotee=await adminmodel.find({$or: [{name:pattern}, {phone:pattern}, {email:pattern}]}).skip(skip).limit(limit);
+       totalCount= await adminmodel.find({$or: [{name:pattern}, {phone:pattern}, {email:pattern}]}).countDocuments();
     }
     else{
-       cordinate=await adminmodel.find(filterQuery).skip(skip).limit(limit);
-       totalCount= await adminmodel.find(filterQuery).countDocuments(); 
+        devotee=await adminmodel.find(filterQuery).skip(skip).limit(limit);
+        totalCount= await adminmodel.find(filterQuery).countDocuments(); 
     }
-    if(cordinate){
+    if(devotee){
         res.status(200).send({
-            data:cordinate,
+            data:devotee,
             count:totalCount
         });
     }
@@ -111,162 +123,221 @@ catch(err){
        data:err,
    });
 }
-}
+};
 
 //get Detail of Particular cordinate
-module.exports.singleCordinate=async function singleCordinate(req,res){
-try{
-    let id=req.params.id;
-    let user=await adminmodel.find({_id:id});
-    if(user){
-        res.status(200).send({  
-            data:user
-        });
+module.exports.singleCordinate = async function singleCordinate(req, res) {
+  try {
+    let id = req.params.id;
+    let user = await adminmodel.find({ _id: id });
+    if (user) {
+      res.status(200).send({
+        data: user,
+      });
+    } else {
+      res.status(422).send({
+        data: "error while fetching Devotee Details",
+      });
     }
-    else{
-        res.status(422).send({
-            data:"error while fetching Devotee Details" 
-        });
-    }
-}
-catch(err){
-   res.status(422).send({
-       data:err,
-   });
-}
-}
+  } catch (err) {
+    res.status(422).send({
+      data: err,
+    });
+  }
+};
 
 //update Level of multiple Cordinator
-module.exports.updateCordinateLevel=async function updateCordinateLevel(req,res){
-try{
-    let obj=req.body;
-    let userIds=obj.id;
-    let levels=obj.level;
-    
-    let users=await adminmodel.updateMany({_id:{ $in: userIds }},{ $set:{level:levels} },{new:true});
+module.exports.updateCordinateLevel = async function updateCordinateLevel(
+  req,
+  res
+) {
+  try {
+    let obj = req.body;
+    let userIds = obj.id;
+    let levels = obj.level;
+
+    let users = await adminmodel.updateMany(
+      { _id: { $in: userIds } },
+      { $set: { level: levels } },
+      { new: true }
+    );
     console.log(users);
-    if(users){
-        res.status(200).send({
-            data:users
-        });
+    if (users) {
+      res.status(200).send({
+        data: users,
+      });
+    } else {
+      res.status(422).send({
+        data: "error while updating Devotee",
+      });
     }
-    else{
-        res.status(422).send({
-            data:"error while updating Devotee"
-        });
-    }
-}
-catch(err){
-   res.status(422).send({
-       data:err,
-   });
-}
-}
+  } catch (err) {
+    res.status(422).send({
+      data: err,
+    });
+  }
+};
 
 //get id and name of cordinate for select option
-module.exports.CordinatezForSelect=async function CordinateForSelect(req,res){
-try{
-    let user=await adminmodel.find({},{name:1});
-    if(user){
-        res.status(200).send({  
-            data:user
-        });
+module.exports.CordinatezForSelect = async function CordinateForSelect(
+  req,
+  res
+) {
+  try {
+    let user = await adminmodel.find({role:"cordinator"}, { name: 1 });
+    if (user) {
+      res.status(200).send({
+        data: user,
+      });
+    } else {
+      res.status(422).send({
+        data: "error while fetching Devotees",
+      });
     }
-    else{
-        res.status(422).send({
-            data:"error while fetching Devotees" 
-        });
-    }
-}
-catch(err){
-   res.status(422).send({
-       data:err,
-   });
-}
-}
+  } catch (err) {
+    res.status(422).send({
+      data: err,
+    });
+  }
+};
 
 //Assign Devotee to Coordinator
-module.exports.assignDevotee=async function assignDevotee(req,res){
-try{
-    let obj=req.body;
+module.exports.assignDevotee = async function assignDevotee(req, res) {
+  try {
+    let obj = req.body;
     console.log(obj);
-    let id=req.params.id;
-  
-    let user=await adminmodel.updateOne({_id:id},{$push:{devotees:{$each:obj.devotee}}});
+    let id = req.params.id;
+
+    let user = await adminmodel.updateOne(
+      { _id: id },
+      { $push: { devotees: { $each: obj.devotee } } }
+    );
     console.log(user);
-    
-    if(user){
-        res.status(200).send({
-            data:user
-        });
+
+    if (user) {
+      res.status(200).send({
+        data: user,
+      });
+    } else {
+      res.status(422).send({
+        data: "error while removing Devotees",
+      });
     }
-    else{
-        res.status(422).send({
-            data:"error while removing Devotees"
-        });
-    }
-}
-catch(err){
-   res.status(422).send({
-       data:err,
-   });
-}
-}
+  } catch (err) {
+    res.status(422).send({
+      data: err,
+    });
+  }
+};
 
 //Deassign Devotee to Coordinator
-module.exports.deassignDevotee=async function deassignDevotee(req,res){
-try{
-    let obj=req.body;
+module.exports.deassignDevotee = async function deassignDevotee(req, res) {
+  try {
+    let obj = req.body;
     console.log(obj);
-    let id=req.params.id;
-    
+    let id = req.params.id;
+
     let user;
-    for(let i=0;i<obj?.devotee?.length;i++){
-       user=await adminmodel.updateOne({_id:id},{$pull:{devotees:obj.devotee[i]}});
-    } 
+    for (let i = 0; i < obj?.devotee?.length; i++) {
+      user = await adminmodel.updateOne(
+        { _id: id },
+        { $pull: { devotees: obj.devotee[i] } }
+      );
+    }
     console.log(user);
-    if(user){
-        res.status(200).send({
-            data:user
-        });
+    if (user) {
+      res.status(200).send({
+        data: user,
+      });
+    } else {
+      res.status(422).send({
+        data: "error while removing Devotees",
+      });
     }
-    else{
-        res.status(422).send({
-            data:"error while removing Devotees"
-        });
-    }
-}
-catch(err){
-   res.status(422).send({
-       data:err,
-   });
-}
-}
+  } catch (err) {
+    res.status(422).send({
+      data: err,
+    });
+  }
+};
 
 //resetpassword for Cordinator
-module.exports.resetpassword=async function resetpassword(req,res){
-try{
-    const token=req.params.token;
-    let {password,confirmedpassword}=req.body;
-    const admin=await adminmodel.findOne({resetToken:token});
-    if(admin){
+module.exports.resetpassword = async function resetpassword(req, res) {
+  try {
+    const token = req.params.token;
+    let { password, confirmedpassword } = req.body;
+    const admin = await adminmodel.findOne({ resetToken: token });
+    if (admin) {
       //resetpasswordhandler will update users password in db
-      admin.resetpasswordhandler(password,confirmedpassword);
+      await admin.resetpasswordhandler(password, confirmedpassword);
       await admin.save();
       return res.status(200).send({
-          data:"password updated successfully"
-      })
+        data: "password updated successfully",
+      });
+    } else {
+      return res.status(401).send({
+        data: "cordinator not found",
+      });
     }
-    else{
-       return res.status(401).send({
-           data:"cordinator not found"
-       });
-    }
-}
-catch(err){
+  } catch (err) {
     res.status(500).send({
-        data:err
-        })
-    }
-}
+      data: err,
+    });
+  }
+};
 
+// Send PassWord Reset Mail
+module.exports.sendMail = async function sendMail(req, res) {
+  try {
+    let obj = req.body;
+    let user = await adminmodel.find({email:obj.send_email});
+    if (user) {
+      const resetToken = user[0].createReastToken();
+      await user[0].save();
+      //http://abcd.com/resetpassword/resetToken
+      // let resetPasswordLink = `${req.protocol}://${req.get(
+      //   "host"
+      // )}/reset-password/${resetToken}`;
+      let resetPasswordLink = `${req.protocol}://localhost:3000/reset-password/${resetToken}`;
+      user[0].resetPasswordLink = resetPasswordLink;
+      let mailConfirmation = await sendmail("resetpasswordself",user[0]);
+      console.log(mailConfirmation);
+      res.status(200).send({
+        mailStatus: mailConfirmation.data,
+      });
+    } else {
+      res.status(404).send({
+        data: "Email is not Registered",
+      });
+    }
+  } catch (err) {
+    res.status(422).send({
+      data: err,
+    });
+  }
+};
+
+//update Profile Image
+module.exports.updateProfileImage=async function updateProfileImage(req,res){
+    console.log(req.file);
+    console.log("Yes");
+    let id=req.params.token;
+    let user=await adminmodel.findById(id);
+      if(user){
+        const image=await adminmodel.findByIdAndUpdate(id,{image:req.file.path});
+        if (image) {
+          return res.status(200).send({
+          data: "Image is Changed Successfully",
+        });
+        } else {
+          return res.status(422).send({
+          data: "Error while Uploading Image",
+        });
+        }
+      }else{
+        return res.status(404).send({
+          data: "Cordinator does not Exist",
+        });
+      } 
+
+}
