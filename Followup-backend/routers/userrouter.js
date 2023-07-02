@@ -1,10 +1,12 @@
 const express=require('express');
 const userrouter=express.Router();
-const {addDevotee,updateDevotee,allDevotee,singleDevotee,updateDevoteeLevel,updateDevoteeGrade, devoteeDetailsByPhone, updateDevoteeCordinator, allDevoteeOfCordinator}=require('../controller/usercontroller');
+const {addDevotee,updateDevotee,allDevotee,singleDevotee,updateDevoteeLevel,updateDevoteeGrade, devoteeDetailsByPhone, updateDevoteeCordinator, allDevoteeOfCordinator, deleteDevotee}=require('../controller/usercontroller');
 const { append } = require('vary');
 const { protectuser } = require('../controller/authcontroller');
 
 //Routers
+//delete devotee
+userrouter.route('/delete/:id').post(deleteDevotee);  
 //protected Route
 userrouter.use(protectuser);
 //Create Devotee
@@ -22,7 +24,7 @@ userrouter.route('/update-level').patch(updateDevoteeLevel);
 //update grade of Multiple Devotee
 userrouter.route('/update-grade').patch(updateDevoteeGrade);
 //update grade of Multiple Devotee
-userrouter.route('/assign-cordinator').patch(updateDevoteeCordinator);
+userrouter.route('/assign-cordinator').patch(updateDevoteeCordinator); 
 //get single Devotee
 userrouter.route('/:id').get(singleDevotee);
 

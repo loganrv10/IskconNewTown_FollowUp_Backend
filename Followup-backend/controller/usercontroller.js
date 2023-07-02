@@ -1,5 +1,7 @@
 const express=require('express');
 const usermodel=require('../models/usermodel');
+const remarkmodel = require('../models/remarkmodel');
+const attendancemodel = require('../models/attendancemodel');
 
 // Add Devotee
 module.exports.addDevotee=async function addDevotee(req,res){ 
@@ -292,6 +294,39 @@ try{
     else{
         res.status(422).send({
             data:"error while fetching devotee list"
+        });
+    }
+}
+catch(err){
+   res.status(422).send({
+       data:err,
+   });
+}
+}
+
+//Delete Devotee
+module.exports.deleteDevotee=async function deleteDevotee(req,res){
+try{
+    let id=req.params.id;
+    let devoteePhone=req.body.devoteePhone;
+    let remark=await remarkmodel.deleteMany({"devotee.id":id});
+    let attendance=await attendancemodel.deleteMany({devoteePhone:devoteePhone});
+    if(remark && attendance){
+        let Devotee=await usermodel.deleteMany({_id:id});
+        if(Devotee){
+           res.status(200).send({
+            data:Devotee
+        });
+        }
+        else{
+          res.status(422).send({
+            data:"error while deleting Devotee"
+        });  
+        }
+    }
+    else{
+        res.status(422).send({
+            data:"error while deleting Devotee"
         });
     }
 }

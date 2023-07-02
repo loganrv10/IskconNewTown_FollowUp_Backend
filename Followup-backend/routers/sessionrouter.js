@@ -1,10 +1,12 @@
 const express=require('express');
 const sessionrouter=express.Router();
 const { append } = require('vary');
-const { createSession, updateSession, allSession, singleSession, singleSessionWithDateAndLevel } = require('../controller/sessioncontroller');
+const { createSession, updateSession, allSession, singleSession, singleSessionWithDateAndLevel, deleteSession } = require('../controller/sessioncontroller');
 const { protectuser } = require('../controller/authcontroller');
 
 //Routers
+//delete devotee
+sessionrouter.route('/delete/:id').post(deleteSession);  
 //protected Route
 // sessionrouter.use(protectuser);
 //Create session

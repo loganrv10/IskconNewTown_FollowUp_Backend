@@ -202,3 +202,35 @@ catch(err){
    });
 }
 }
+
+//Delete Session
+module.exports.deleteSession=async function deleteSession(req,res){
+try{
+    let id=req.params.id;
+    let sessionDate=req.body.sessionDate;
+    let attendance=await attendancemodel.deleteMany({sessionDate:sessionDate});
+    if(attendance){
+        let session=await sessionmodel.deleteMany({_id:id});
+        if(session){
+           res.status(200).send({
+            data:session
+        });
+        }
+        else{
+          res.status(422).send({
+            data:"error while deleting Session"
+        });  
+        }
+    }
+    else{
+        res.status(422).send({
+            data:"error while deleting Session"
+        });
+    }
+}
+catch(err){
+   res.status(422).send({
+       data:err,
+   });
+}
+}
