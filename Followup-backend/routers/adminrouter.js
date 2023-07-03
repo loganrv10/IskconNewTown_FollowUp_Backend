@@ -2,11 +2,13 @@ const express=require('express');
 const multer=require('multer');
 const path=require('path');
 const adminrouter=express.Router();
-const {addCordinate,updateCordinate,allCordinate,singleCordinate,updateCordinateLevel, CordinatezForSelect, assignDevotee, deassignDevotee, resetpassword, sendMail, updateProfileImage}=require('../controller/admincontroller');
+const {addCordinate,updateCordinate,allCordinate,singleCordinate,updateCordinateLevel, CordinatezForSelect, assignDevotee, deassignDevotee, resetpassword, sendMail, updateProfileImage, deleteAdmin}=require('../controller/admincontroller');
 const { append } = require('vary');
 const { login, protectuser, isAuthorised, getProfile } = require('../controller/authcontroller');
 
 //Routers
+//delete devotee
+adminrouter.route('/delete/:id').post(deleteAdmin); 
 //login for cordinator
 adminrouter.route('/login').post(login);
 //get profile from token

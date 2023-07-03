@@ -5,6 +5,7 @@ const adminmodel = require("../models/adminmodel");
 const { sendmail } = require("../emailUtility/nodeMailer");
 
 const dotenv = require("dotenv");
+const usermodel = require("../models/usermodel");
 dotenv.config();
 const jwt_key = process.env.key;
 
@@ -340,4 +341,39 @@ module.exports.updateProfileImage=async function updateProfileImage(req,res){
         });
       } 
 
+}
+
+//Delete Session
+module.exports.deleteAdmin=async function deleteAdmin(req,res){
+try{
+    let id=req.params.id;
+    let user = await usermodel.updateMany(
+      { "handled_by.id": id },
+      { $set: { handled_by: {} } },
+      { new: true }
+    );
+    if(user){
+        let admin=await adminmodel.deleteMany({_id:id});  
+        if(admin){
+           res.status(200).send({
+            data:admin
+        });
+        }
+        else{
+          res.status(422).send({
+            data:"error while deleting Admin"
+        });  
+        }
+    }
+    else{
+        res.status(422).send({
+            data:"error while deleting Admin"
+        });
+    }
+}
+catch(err){
+   res.status(422).send({
+       data:err,
+   });
+}
 }
