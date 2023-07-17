@@ -6,7 +6,7 @@ const { createRemark, updateRemark, allRemark, deleteRemark } = require('../cont
 
 //Routers
 //protected Route
-// remarkrouter.use(protectuser);
+remarkrouter.use(protectuser);
 //Create remark
 remarkrouter.route('/create-remark').post(createRemark);
 //Update remark

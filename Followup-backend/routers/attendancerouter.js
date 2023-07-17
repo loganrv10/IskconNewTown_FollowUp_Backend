@@ -5,7 +5,7 @@ const attendancerouter=express.Router();
 
 //Routers
 //protected Route
-// attendancerouter.use(protectuser);
+attendancerouter.use(protectuser);
 //Create attendance
 attendancerouter.route('/create-attendance').patch(createAttendance); 
 //get all Attendance of Session
