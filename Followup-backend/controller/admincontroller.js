@@ -180,12 +180,11 @@ module.exports.updateCordinateLevel = async function updateCordinateLevel(
 };
 
 //get id and name of cordinate for select option
-module.exports.CordinatezForSelect = async function CordinateForSelect(
-  req,
-  res
-) {
+module.exports.CordinatezForSelect = async function CordinateForSelect(req,res) {
   try {
+    console.log("Yes");
     let user = await adminmodel.find({role:"cordinator"}, { name: 1 });
+    console.log(user);
     if (user) {
       res.status(200).send({
         data: user,

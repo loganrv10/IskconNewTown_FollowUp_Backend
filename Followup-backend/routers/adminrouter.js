@@ -14,9 +14,7 @@ adminrouter.route('/send-mail').post(sendMail);
 //update Password of cordinator
 adminrouter.route('/resetpassword/:token').patch(resetpassword);
 //protected Route
-adminrouter.use(protectuser);
-//delete devotee
-adminrouter.route('/delete/:id').post(deleteAdmin); 
+adminrouter.use(protectuser); 
 //get profile from token
 adminrouter.route('/get-profile').get(getProfile);
 
@@ -45,23 +43,26 @@ const upload= multer({
 })
 
 adminrouter.post("/profileimage/:token",upload.single('photo'),updateProfileImage);
-//admin specific functionality
-adminrouter.use(isAuthorised(['admin']));
+
 //get all Cordinate for select
 adminrouter.route('/select-cordinate').get(CordinatezForSelect);
-//Create Cordinate
-adminrouter.route('/add-cordinate').post(addCordinate);   
+//get all Cordinate
+adminrouter.route(isAuthorised(['admin']),'/all-cordinate').get(allCordinate); 
+//get single Cordinate
+adminrouter.route('/:id').get(singleCordinate);
 //Update Cordinate
 adminrouter.route('/update-cordinate/:id').patch(updateCordinate);
-//get all Cordinate
-adminrouter.route('/all-cordinate').get(allCordinate); 
+//admin specific functionality
+adminrouter.use(isAuthorised(['admin']));
+//delete devotee
+adminrouter.route('/delete/:id').delete(deleteAdmin);
+//Create Cordinate
+adminrouter.route('/add-cordinate').post(addCordinate);   
 //assign devotees to Cordinate
 adminrouter.route('/assign-devotee/:id').patch(assignDevotee);
 //deassign devotees to Cordinate
 adminrouter.route('/deassign-devotee/:id').patch(deassignDevotee);
 //update level of Multiple cordinate
 adminrouter.route('/update-level').patch(updateCordinateLevel);
-//get single Cordinate
-adminrouter.route('/:id').get(singleCordinate);
 
 module.exports=adminrouter;
