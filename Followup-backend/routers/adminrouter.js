@@ -55,7 +55,7 @@ adminrouter.route('/update-cordinate/:id').patch(updateCordinate);
 //admin specific functionality
 adminrouter.use(isAuthorised(['admin']));
 //delete devotee
-adminrouter.route('/delete/:id').delete(deleteAdmin);
+adminrouter.route('/delete/:id').delete(deleteAdmin);   
 //Create Cordinate
 adminrouter.route('/add-cordinate').post(addCordinate);   
 //assign devotees to Cordinate
