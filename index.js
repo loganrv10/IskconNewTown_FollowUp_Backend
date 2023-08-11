@@ -8,7 +8,7 @@ const port=process.env.port;
 const app=express();
 
 const corsOptions = {
-  origin: ["http://localhost:5000", "https://foe-followup1.onrender.com"], // Replace with your frontend domain
+  origin: ["http://localhost:3000"], // Replace with your frontend domain
   methods: ["GET", "POST","PATCH", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
