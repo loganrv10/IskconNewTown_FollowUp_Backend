@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "start":"node index.js"
+  },
+
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
@@ -12,3 +16,4 @@
     "validator": "^13.11.0"
   }
 }
+
