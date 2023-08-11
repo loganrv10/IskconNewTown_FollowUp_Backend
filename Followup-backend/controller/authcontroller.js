@@ -16,11 +16,13 @@ module.exports.login = async function login(req, res) {
       let objpassword = obj.password;
       let userpassword = user.password;
       let verify;
+      console.log(userpassword,"hello",objpassword);
       if (!objpassword || !userpassword) {
         verify = false;
       } else {
         verify = await bcrypt.compare(objpassword, userpassword);
       }
+      console.log(verify);
       if (verify) {
         let uid = user._id;
         let token = jwt.sign({ payload: uid }, jwt_key);
@@ -95,7 +97,6 @@ module.exports.protectuser=async function protectuser(req,res,next){
         if(token){
           let payload=jwt.verify(token,jwt_key);  
           if(payload){
-            console.log(payload);
             let admin=await adminmodel.findById(payload.payload);
             req.id=admin._id;
             req.role=admin.role;
@@ -129,6 +130,7 @@ module.exports.protectuser=async function protectuser(req,res,next){
 
 //isAuthorised-> to check the user's role [admin,cordinator]
 module.exports.isAuthorised = function isAuthorised(roles) {
+   console.log(roles,"Authorised")
   return function (req, res, next) {
     if (roles.includes(req.role) == true) {
       next();

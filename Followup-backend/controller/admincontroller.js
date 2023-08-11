@@ -70,6 +70,7 @@ module.exports.updateCordinate = async function updateCordinate(req, res) {
 module.exports.allCordinate = async function allCordinate(req, res) {
   try{
     console.log(req.query);
+    console.log("Yes")
     let limit =req.query.limit?parseInt(req.query.limit):5;
     let page = req.query.page?parseInt(req.query.page):1;
     let filterKey=req.query.filterkey?req.query.filterkey:null;
@@ -291,6 +292,7 @@ module.exports.sendMail = async function sendMail(req, res) {
   try {
     let obj = req.body;
     let user = await adminmodel.find({email:obj.send_email});
+    console.log(user);
     if (user) {
       const resetToken = user[0].createReastToken();
       await user[0].save();

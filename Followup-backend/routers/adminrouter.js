@@ -47,7 +47,7 @@ adminrouter.post("/profileimage/:token",upload.single('photo'),updateProfileImag
 //get all Cordinate for select
 adminrouter.route('/select-cordinate').get(CordinatezForSelect);
 //get all Cordinate
-adminrouter.route(isAuthorised(['admin']),'/all-cordinate').get(allCordinate); 
+adminrouter.route('/all-cordinate').get(allCordinate); 
 //get single Cordinate
 adminrouter.route('/:id').get(singleCordinate);
 //Update Cordinate
