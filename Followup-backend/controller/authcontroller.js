@@ -11,7 +11,9 @@ const jwt_key = process.env.key;
 module.exports.login = async function login(req, res) {
   try {
     let obj = req.body;
+    console.log(obj);
     let user = await adminmodel.findOne({ email: obj.email });
+    console.log(user);
     if (user) {
       let objpassword = obj.password;
       let userpassword = user.password;

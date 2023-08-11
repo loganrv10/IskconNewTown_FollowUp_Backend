@@ -2,8 +2,7 @@ const mongoose=require('mongoose');
 const validator = require('validator');
 const bcrypt=require('bcryptjs');
 const Crypto = require("crypto");
-const { stringify } = require('querystring');
-
+const { stringify } = require('querystring');  
 const dotenv = require('dotenv')
 dotenv.config();
 const DB=process.env.DB;
@@ -18,6 +17,7 @@ db.on('error', console.error.bind(console, 'Connection error:'));
 db.once('open', () => {
   console.log('Connected to the Admin Database.');
 });
+
 
 //admin Schema
 const adminSchema=mongoose.Schema({
