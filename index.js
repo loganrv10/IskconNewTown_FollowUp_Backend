@@ -1,16 +1,24 @@
 const express=require('express');
 const cookieParser = require('cookie-parser');
-const cors=require('cors');
+// const cors=require('cors');
 const dotenv = require('dotenv')
 
 dotenv.config();
 const port=process.env.port;
 const app=express();
 
+const corsOptions = {
+  origin: ["http://localhost:5000", "https://foe-followup1.onrender.com"], // Replace with your frontend domain
+  methods: ["GET", "POST","PATCH", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+app.use(cors(corsOptions));
+
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors());
+// app.use(cors());
 
 const userrouter=require('./routers/userrouter');
 app.use('/devotee',userrouter);
