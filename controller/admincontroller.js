@@ -19,7 +19,7 @@ module.exports.addCordinate = async function addCordinate(req, res) {
     let user = await adminmodel.create(obj);
     if (user) {
       const resetToken = user.createReastToken();
-      let resetPasswordLink = `${req.protocol}://localhost:3000/reset-password/${resetToken}`;
+      let resetPasswordLink = `${req.protocol}://https://iskconfollowups.netlify.app/reset-password/${resetToken}`;
       user.resetPasswordLink = resetPasswordLink;
       await user.save();
       let mailConfirmation = await sendmail("resetpasswordself",user);
