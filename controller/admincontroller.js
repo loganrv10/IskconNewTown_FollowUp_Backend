@@ -300,7 +300,7 @@ module.exports.sendMail = async function sendMail(req, res) {
       // let resetPasswordLink = `${req.protocol}://${req.get(
       //   "host"
       // )}/reset-password/${resetToken}`;
-      let resetPasswordLink = `${req.protocol}://localhost:3000/reset-password/${resetToken}`;
+      let resetPasswordLink = `${req.protocol}://iskconfollowups.netlify.app/reset-password/${resetToken}`;
       user[0].resetPasswordLink = resetPasswordLink;
       let mailConfirmation = await sendmail("resetpasswordself",user[0]);
       console.log(mailConfirmation);
