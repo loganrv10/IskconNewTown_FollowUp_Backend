@@ -152,7 +152,7 @@ try{
     }
     else{
         res.status(404).send({
-            data:"Devotee does not Exist" 
+            data:"Participant does not Exist" 
         });
     }
 }
@@ -244,7 +244,7 @@ catch(err){
 }
 
 //get All DevoteeList of Cordinator
-module.exports.allDevoteeOfCordinator=async function allDevotee(req,res){
+module.exports.allDevoteeOfCordinator=async function allDevoteeOfCordinator(req,res){
 try{
     console.log(req.query);
     let limit =req.query.limit?parseInt(req.query.limit):5;
@@ -304,6 +304,30 @@ catch(err){
 }
 }
 
+//get Devotee count of Cordinator
+module.exports.allDevoteeCount=async function allDevoteeCount(req,res){
+try{
+    let cord=req.query.cord;
+    let totalCount;
+    totalCount= await usermodel.find({"handled_by.id":cord}).countDocuments();
+    if(totalCount!==undefined){
+        res.status(200).send({
+            data:totalCount
+        });
+    }
+    else{
+        res.status(422).send({
+            data:"error while fetching devotee count"
+        });
+    }
+}
+catch(err){
+   res.status(422).send({
+       data:err,
+   });
+}
+}
+
 //Delete Devotee
 module.exports.deleteDevotee=async function deleteDevotee(req,res){
 try{
@@ -320,13 +344,13 @@ try{
         }
         else{
           res.status(422).send({
-            data:"error while deleting Devotee"
+            data:"error while deleting Participant"
         });  
         }
     }
     else{
         res.status(422).send({
-            data:"error while deleting Devotee"
+            data:"error while deleting Participant"
         });
     }
 }

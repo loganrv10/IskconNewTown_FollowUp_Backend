@@ -19,7 +19,8 @@ module.exports.addCordinate = async function addCordinate(req, res) {
     let user = await adminmodel.create(obj);
     if (user) {
       const resetToken = user.createReastToken();
-      let resetPasswordLink = `${req.protocol}://localhost:3000/reset-password/${resetToken}`;
+      let resetPasswordLink = `${req.protocol}://iskconfollowups.netlify.app/reset-password/${resetToken}`;
+      // let resetPasswordLink = `${req.protocol}://localhost:3000/reset-password/${resetToken}`;
       user.resetPasswordLink = resetPasswordLink;
       await user.save();
       let mailConfirmation = await sendmail("resetpasswordself",user);
@@ -30,7 +31,7 @@ module.exports.addCordinate = async function addCordinate(req, res) {
       });
     } else {
       res.status(422).send({
-        data: "error while adding User",
+        data: "error while adding Volunteer",
         mailStatus: mailConfirmation.data,
       });
     }
@@ -56,7 +57,7 @@ module.exports.updateCordinate = async function updateCordinate(req, res) {
       });
     } else {
       res.status(422).send({
-        data: "error while updating Cordinator",
+        data: "error while updating Volunteer",
       });
     }
   } catch (err) {
@@ -116,7 +117,7 @@ module.exports.allCordinate = async function allCordinate(req, res) {
     }
     else{
         res.status(422).send({
-            data:"error while fetching devotee list"
+            data:"error while fetching Volunteer list"
         });
     }
 }
@@ -138,7 +139,7 @@ module.exports.singleCordinate = async function singleCordinate(req, res) {
       });
     } else {
       res.status(422).send({
-        data: "error while fetching Devotee Details",
+        data: "error while fetching Volunteer Details",
       });
     }
   } catch (err) {
@@ -170,7 +171,7 @@ module.exports.updateCordinateLevel = async function updateCordinateLevel(
       });
     } else {
       res.status(422).send({
-        data: "error while updating Devotee",
+        data: "error while updating Volunteer",
       });
     }
   } catch (err) {
@@ -192,7 +193,7 @@ module.exports.CordinatezForSelect = async function CordinateForSelect(req,res) 
       });
     } else {
       res.status(422).send({
-        data: "error while fetching Devotees",
+        data: "error while fetching Volunteer",
       });
     }
   } catch (err) {
@@ -221,7 +222,7 @@ module.exports.assignDevotee = async function assignDevotee(req, res) {
       });
     } else {
       res.status(422).send({
-        data: "error while removing Devotees",
+        data: "error while removing Volunteer",
       });
     }
   } catch (err) {
@@ -252,7 +253,7 @@ module.exports.deassignDevotee = async function deassignDevotee(req, res) {
       });
     } else {
       res.status(422).send({
-        data: "error while removing Devotees",
+        data: "error while removing Volunteer",
       });
     }
   } catch (err) {
@@ -277,7 +278,7 @@ module.exports.resetpassword = async function resetpassword(req, res) {
       });
     } else {
       return res.status(401).send({
-        data: "cordinator not found",
+        data: "Volunteer not found",
       });
     }
   } catch (err) {
@@ -300,7 +301,8 @@ module.exports.sendMail = async function sendMail(req, res) {
       // let resetPasswordLink = `${req.protocol}://${req.get(
       //   "host"
       // )}/reset-password/${resetToken}`;
-      let resetPasswordLink = `${req.protocol}://localhost:3000/reset-password/${resetToken}`;
+      let resetPasswordLink = `${req.protocol}://iskconfollowups.netlify.app/reset-password/${resetToken}`;
+      // let resetPasswordLink = `${req.protocol}://localhost:3000/reset-password/${resetToken}`;  
       user[0].resetPasswordLink = resetPasswordLink;
       let mailConfirmation = await sendmail("resetpasswordself",user[0]);
       console.log(mailConfirmation);
@@ -362,13 +364,13 @@ try{
         }
         else{
           res.status(422).send({
-            data:"error while deleting Admin"
+            data:"error while deleting Volunteer"
         });  
         }
     }
     else{
         res.status(422).send({
-            data:"error while deleting Admin"
+            data:"error while deleting Volunteer"
         });
     }
 }

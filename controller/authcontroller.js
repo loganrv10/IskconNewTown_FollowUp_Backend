@@ -24,10 +24,10 @@ module.exports.login = async function login(req, res) {
       } else {
         verify = await bcrypt.compare(objpassword, userpassword);
       }
-      console.log(verify);
+      console.log("Hanuman",verify);
       if (verify) {
         let uid = user._id;
-        let token = jwt.sign({ payload: uid }, jwt_key);
+        let token = jwt.sign({ payload: uid }, jwt_key);  
         res.cookie("userAuth", token, { httpOnly: true });
         return res.status(200).send({
           data: {
@@ -93,9 +93,9 @@ module.exports.protectuser=async function protectuser(req,res,next){
     try{
         let token;
         let temp = req.header('authorization');
-        console.log(temp);
+        // console.log(temp);
         token = temp.substring(4);
-        console.log(token);
+        // console.log(token);
         if(token){
           let payload=jwt.verify(token,jwt_key);  
           if(payload){
@@ -132,7 +132,7 @@ module.exports.protectuser=async function protectuser(req,res,next){
 
 //isAuthorised-> to check the user's role [admin,cordinator]
 module.exports.isAuthorised = function isAuthorised(roles) {
-   console.log(roles,"Authorised")
+  // console.log(roles,"Authorised")
   return function (req, res, next) {
     if (roles.includes(req.role) == true) {
       next();

@@ -28,7 +28,7 @@ const adminSchema=mongoose.Schema({
     phone:{
         type:String,
         required:[true,"This Field is Required"],
-        unique:[true,"This Devotee is already Exist"],
+        unique:[true,"This Volunteer is already Exist"],
         validate: {
             validator: function() {
             return this.phone.length === 10;
@@ -39,7 +39,7 @@ const adminSchema=mongoose.Schema({
     email:{
         type:String,
         required:[true,"This Field is Required"],
-        unique:[true,"This Devotee is already Exist"],
+        unique:[true,"This Volunteer is already Exist"],
         validate: {
         validator:function(){
             return validator.isEmail(this.email);
@@ -66,6 +66,9 @@ const adminSchema=mongoose.Schema({
     location:{
        type:String 
     },
+    base:{
+       type:String 
+    },
     level:{
        type:Number,
        required:[true,"This Field is Required"]
@@ -89,7 +92,7 @@ const adminSchema=mongoose.Schema({
 //middleware
 adminSchema.post('save', function(error, doc, next) {
   if (error.code === 11000) {
-    next('This Cordinator is already Exist');
+    next('This Volunteer is already Exist');
   }else {
     next(error);
   }

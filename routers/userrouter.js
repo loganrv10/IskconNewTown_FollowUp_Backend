@@ -1,6 +1,6 @@
 const express=require('express');
 const userrouter=express.Router();
-const {addDevotee,updateDevotee,allDevotee,singleDevotee,updateDevoteeLevel,updateDevoteeGrade, devoteeDetailsByPhone, updateDevoteeCordinator, allDevoteeOfCordinator, deleteDevotee}=require('../controller/usercontroller');
+const {addDevotee,updateDevotee,allDevotee,singleDevotee,updateDevoteeLevel,updateDevoteeGrade, devoteeDetailsByPhone, updateDevoteeCordinator, allDevoteeOfCordinator, deleteDevotee, allDevoteeCount}=require('../controller/usercontroller');
 const { append } = require('vary');
 const { protectuser, isAuthorised } = require('../controller/authcontroller');
 
@@ -13,8 +13,10 @@ userrouter.route('/add-devotee').post(addDevotee);
 userrouter.route('/update-devotee/:id').patch(updateDevotee);   
 //get all Devotee
 userrouter.route('/all-devotee').get(allDevotee);
-//get all Devotee
+//get Devotee of cordinator
 userrouter.route('/all-devotee-cordinator').get(allDevoteeOfCordinator);
+//get Devotee count of cordinator
+userrouter.route('/count-devotee-cordinator').get(allDevoteeCount);
 //get details of devotee based on date and level
 userrouter.route('/devotee-details').get(devoteeDetailsByPhone);
 //update grade of Multiple Devotee

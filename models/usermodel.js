@@ -26,7 +26,7 @@ const userSchema=mongoose.Schema({
     phone:{
         type:String,
         required:[true,"This Field is Required"],
-        unique:[true,"This Devotee is already Exist"],
+        unique:[true,"This Participant is already Exist"],
         validate: {
             validator: function() {
             return this.phone.length === 10;
@@ -36,6 +36,23 @@ const userSchema=mongoose.Schema({
     },
     location:{
        type:String 
+    },
+    currentLocation:{
+       type:String 
+    },
+    shiftLocation:{
+       type:String 
+    },
+    comment:{
+       type:String 
+    },
+    round:{
+      type:Number,
+      required:[true,"This Field is Required"]
+    },
+    branch:{
+      type:String,
+      required:[true,"This Field is Required"]
     },
     level:{
        type:Number,
@@ -55,6 +72,10 @@ const userSchema=mongoose.Schema({
        type:String,
        required:[true,"This Field is Required"]
     },
+    marital_status:{
+       type:String,
+       required:[true,"This Field is Required"]
+    },
     creted_at:{
       type:String
     }
@@ -63,7 +84,7 @@ const userSchema=mongoose.Schema({
 //middleware
 userSchema.post('save', function(error, doc, next) {
   if (error.code === 11000) {
-    next('This Devotee is already Exist');
+    next('This Participant is already Exist');
   }else {
     next(error);
   }

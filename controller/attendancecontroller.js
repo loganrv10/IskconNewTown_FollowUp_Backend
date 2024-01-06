@@ -115,13 +115,12 @@ catch(err){
 module.exports.getRecordDevotee=async function getRecordDevotee(req,res){
 try{
     let id=req.params.id;
-    console.log(id);
     let record=await attendancemodel.find({devoteeId:id});
     let result=[];
     if(record){
     for(let i=0;i<record.length;i++){
         let dateString = record[i].sessionDate;
-        const [day, month, year] = dateString.split("-");
+        const [year,month,day] = dateString.split("-");
         const date = new Date(year, month - 1, day); // Month in JavaScript's Date object is 0-based 
         const monthText = date.toLocaleString('en-US', { month: 'long' });
         let exist = result.findIndex(obj =>
