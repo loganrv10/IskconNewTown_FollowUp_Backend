@@ -1,6 +1,6 @@
 const express=require('express');
 const userrouter=express.Router();
-const {addDevotee,updateDevotee,allDevotee,singleDevotee,updateDevoteeLevel,updateDevoteeGrade, devoteeDetailsByPhone, updateDevoteeCordinator, allDevoteeOfCordinator, deleteDevotee, allDevoteeCount}=require('../controller/usercontroller');
+const {addDevotee,updateDevotee,allDevotee,singleDevotee,updateDevoteeLevel,updateDevoteeGrade, devoteeDetailsByPhone, updateDevoteeCordinator, allDevoteeOfCordinator, deleteDevotee, allDevoteeCount, downloadDevoteeToExcel}=require('../controller/usercontroller');
 const { append } = require('vary');
 const { protectuser, isAuthorised } = require('../controller/authcontroller');
 
@@ -13,6 +13,8 @@ userrouter.route('/add-devotee').post(addDevotee);
 userrouter.route('/update-devotee/:id').patch(updateDevotee);   
 //get all Devotee
 userrouter.route('/all-devotee').get(allDevotee);
+//download all Devotee data as excel
+userrouter.route('/export-devotee').get(downloadDevoteeToExcel);
 //get Devotee of cordinator
 userrouter.route('/all-devotee-cordinator').get(allDevoteeOfCordinator);
 //get Devotee count of cordinator

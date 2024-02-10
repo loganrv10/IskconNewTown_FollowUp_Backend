@@ -2,6 +2,7 @@ const express=require('express');
 const usermodel=require('../models/usermodel');
 const remarkmodel = require('../models/remarkmodel');
 const attendancemodel = require('../models/attendancemodel');
+const CsvParser = require('json2csv').Parser;
 
 // Add Devotee
 module.exports.addDevotee=async function addDevotee(req,res){ 
@@ -52,6 +53,54 @@ try{
 catch(err){
    res.status(422).send({
        data:err,
+   });
+}
+}
+
+//download Devotee data as excel
+module.exports.downloadDevoteeToExcel=async function downloadDevoteeToExcel(req,res){
+try{
+    let users=[];
+    let alluser=await usermodel.find({});
+    if(alluser && alluser.length > 0){
+        alluser.forEach((user)=>{
+           const {name,phone,location,currentLocation,shiftLocation,comment,round,branch,level,registered_by,handled_by,grade,status,marital_status,creted_at}=user;
+           let registeredByName=registered_by?.name;
+           let handledByName=handled_by?.name;
+           users.push({
+            'Name': name,
+            'Phone': phone,
+            'Mother Tongue': location,
+            'Current Location': currentLocation,
+            'Shifted To': shiftLocation,
+            'Comment': comment,
+            'No. of Rounds': round,
+            'Branch': branch,
+            'Level': level,
+            'Registered By': registeredByName,
+            'Handled By': handledByName,
+            'Grade': grade,
+            'Profession': status,
+            'Marital Status': marital_status,
+            'Joined At': creted_at
+            });
+        })
+        const csvFields=Object.keys(users[0]);;
+        const csvParser=new CsvParser({csvFields});
+        const csvData= csvParser.parse(users);
+        res.setHeader('Content-Type','text/csv');
+        res.setHeader('Content-Disposition','attachment: filename=participantsData.csv');
+        res.status(200).send(csvData);
+    }
+    else{
+        res.status(404).send({
+            data:"No participant data found"
+        });
+    }
+}
+catch(err){
+   res.status(422).send({
+       data:err
    });
 }
 }
