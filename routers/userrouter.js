@@ -5,10 +5,12 @@ const { append } = require('vary');
 const { protectuser, isAuthorised } = require('../controller/authcontroller');
 
 //Routers
-//protected Route
-userrouter.use(protectuser);  
 //Create Devotee
 userrouter.route('/add-devotee').post(addDevotee);
+//get details of devotee based on date and level
+userrouter.route('/devotee-details').get(devoteeDetailsByPhone);
+//protected Route
+userrouter.use(protectuser);  
 //Update Devotee
 userrouter.route('/update-devotee/:id').patch(updateDevotee);   
 //get all Devotee
@@ -19,8 +21,6 @@ userrouter.route('/export-devotee').get(downloadDevoteeToExcel);
 userrouter.route('/all-devotee-cordinator').get(allDevoteeOfCordinator);
 //get Devotee count of cordinator
 userrouter.route('/count-devotee-cordinator').get(allDevoteeCount);
-//get details of devotee based on date and level
-userrouter.route('/devotee-details').get(devoteeDetailsByPhone);
 //update grade of Multiple Devotee
 userrouter.route('/update-grade').patch(updateDevoteeGrade);
 //get single Devotee

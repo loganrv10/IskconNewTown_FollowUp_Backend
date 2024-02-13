@@ -4,10 +4,10 @@ const { protectuser } = require('../controller/authcontroller');
 const attendancerouter=express.Router(); 
 
 //Routers
-//protected Route
-attendancerouter.use(protectuser);
 //Create attendance
 attendancerouter.route('/create-attendance').patch(createAttendance); 
+//protected Route
+attendancerouter.use(protectuser);
 //get all Attendance of Session
 attendancerouter.route('/session-attendance').get(sessionAttendance);
 //update remark of attendance

@@ -5,12 +5,12 @@ const { createSession, updateSession, allSession, singleSession, singleSessionWi
 const { protectuser, isAuthorised } = require('../controller/authcontroller');
 
 //Routers
+//get details of session based on date and level
+sessionrouter.route('/session-details').get(singleSessionWithDateAndLevel);
 //protected Route
 sessionrouter.use(protectuser);
 //get all session
 sessionrouter.route('/all-session').get(allSession);
-//get details of session based on date and level
-sessionrouter.route('/session-details').get(singleSessionWithDateAndLevel);
 //get single session
 sessionrouter.route('/:id').get(singleSession);
 //admin specific functionality

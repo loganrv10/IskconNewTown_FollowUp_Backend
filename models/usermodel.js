@@ -60,7 +60,7 @@ const userSchema=mongoose.Schema({
     },
     registered_by:{
       type:Object,
-      required:[true,"This Field is Required"]  
+      // required:[true,"This Field is Required"]  
     },
     handled_by:{
        type:Object 
