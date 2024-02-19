@@ -7,12 +7,12 @@ const usermodel = require('../models/usermodel');
 module.exports.createAttendance=async function createAttendance(req,res){
 try{
     let obj=req.body;
-    console.log(obj);
     let sessionID=obj.sessionID;
     let userID=obj.userID;
     let session= await sessionmodel.findOne({_id:sessionID},{date:1,level:1});
     let user= await usermodel.findOne({_id:userID},{name:1,phone:1,handled_by:1,level:1});
     let checkAttendance = await attendancemodel.findOneAndUpdate({sessionDate:session.date,sessionLevel:session.level,devoteePhone:user.phone},{status:obj.status},{new:true});
+    console.log("hellooo",session,user,checkAttendance);
     if(checkAttendance){
         return(
             res.status(200).send({
@@ -20,9 +20,28 @@ try{
         }));
     }
     else{
-        res.status(422).send({
+        let dataToInserted={
+            status:obj.status,
+            remark:"",
+            devotee:user,
+            session:session,
+            sessionDate:session.date,
+            sessionLevel:session.level,
+            devoteePhone:user.phone,
+            sessionId:session._id,
+            devoteeId:user._id
+            }
+        let attendance=await attendancemodel.create(dataToInserted);
+        if(attendance){
+           return(
+            res.status(200).send({
+                data:attendance
+            }));
+        }else{
+            res.status(422).send({
             data:"error while marking attendance"
-        });
+            });
+        }
     }
 }
 catch(err){
