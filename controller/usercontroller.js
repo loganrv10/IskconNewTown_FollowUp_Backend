@@ -193,7 +193,7 @@ module.exports.devoteeDetailsByPhone=async function devoteeDetailsByPhone(req,re
 try{
     console.log(req.query);
     let phone=req.query.phone; 
-    let user=await usermodel.find({phone:phone},{name:1,phone:1,level:1,handled_by:1});
+    let user=await usermodel.find({phone:phone},{name:1,phone:1,level:1,handled_by:1,branch:1});
     if(user?.length!=0){
         res.status(200).send({  
             data:user

@@ -16,7 +16,7 @@ userrouter.route('/update-devotee/:id').patch(updateDevotee);
 //get all Devotee
 userrouter.route('/all-devotee').get(allDevotee);
 //download all Devotee data as excel
-userrouter.route('/export-devotee').get(downloadDevoteeToExcel);
+userrouter.route('/export-devotee').get(downloadDevoteeToExcel);  
 //get Devotee of cordinator
 userrouter.route('/all-devotee-cordinator').get(allDevoteeOfCordinator);
 //get Devotee count of cordinator

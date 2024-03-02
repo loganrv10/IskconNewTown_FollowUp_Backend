@@ -26,6 +26,10 @@ const sessionSchema=mongoose.Schema({
        type:Number,
        required:[true,"This Field is Required"]
     },
+    branch:{
+      type:String,
+      required:[true,"This Field is Required"]
+    },
     date:{
        type:String,
        required:[true,"This Field is Required"]

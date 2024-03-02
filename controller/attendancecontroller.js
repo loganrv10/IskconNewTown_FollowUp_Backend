@@ -9,10 +9,9 @@ try{
     let obj=req.body;
     let sessionID=obj.sessionID;
     let userID=obj.userID;
-    let session= await sessionmodel.findOne({_id:sessionID},{date:1,level:1});
-    let user= await usermodel.findOne({_id:userID},{name:1,phone:1,handled_by:1,level:1});
-    let checkAttendance = await attendancemodel.findOneAndUpdate({sessionDate:session.date,sessionLevel:session.level,devoteePhone:user.phone},{status:obj.status},{new:true});
-    console.log("hellooo",session,user,checkAttendance);
+    let session= await sessionmodel.findOne({_id:sessionID},{date:1,level:1,branch:1});
+    let user= await usermodel.findOne({_id:userID},{name:1,phone:1,handled_by:1,level:1,branch:1});
+    let checkAttendance = await attendancemodel.findOneAndUpdate({sessionDate:session.date,sessionLevel:session.level,devoteePhone:user.phone,sessionBranch:session.branch},{status:obj.status},{new:true});
     if(checkAttendance){
         return(
             res.status(200).send({
@@ -29,6 +28,7 @@ try{
             sessionLevel:session.level,
             devoteePhone:user.phone,
             sessionId:session._id,
+            sessionBranch:session.branch,
             devoteeId:user._id
             }
         let attendance=await attendancemodel.create(dataToInserted);
@@ -65,21 +65,21 @@ try{
     if(search){
        const pattern = new RegExp('^' +search, 'i');
        if(status=="P"){
-           attendance=await attendancemodel.find({sessionId:id,status:"Present"},{status:1,devotee:1,remark:1}).find({$or: [{"devotee.name":pattern}, {"devotee.phone":pattern},{"devotee.handled_by.name":pattern}]}).skip(skip).limit(limit);
-           totalCount= await attendancemodel.find({sessionId:id,status:"Present"},{status:1,devotee:1,remark:1}).find({$or: [{"devotee.name":pattern}, {"devotee.phone":pattern},{"devotee.handled_by.name":pattern}]}).countDocuments();
+           attendance=await attendancemodel.find({sessionId:id,status:"Present"},{status:1,devotee:1,remark:1,creted_at:1}).find({$or: [{"devotee.name":pattern}, {"devotee.phone":pattern},{"devotee.handled_by.name":pattern}]}).skip(skip).limit(limit);
+           totalCount= await attendancemodel.find({sessionId:id,status:"Present"},{status:1,devotee:1,remark:1,creted_at:1}).find({$or: [{"devotee.name":pattern}, {"devotee.phone":pattern},{"devotee.handled_by.name":pattern}]}).countDocuments();
         }
        else{
-           attendance=await attendancemodel.find({sessionId:id,status:{ $ne: 'Present' }},{status:1,devotee:1,remark:1}).find({$or: [{"devotee.name":pattern}, {"devotee.phone":pattern},{"devotee.handled_by.name":pattern}]}).skip(skip).limit(limit);
-           totalCount= await attendancemodel.find({sessionId:id,status:{ $ne: 'Present' }},{status:1,devotee:1,remark:1}).find({$or: [{"devotee.name":pattern}, {"devotee.phone":pattern},{"devotee.handled_by.name":pattern}]}).countDocuments();
+           attendance=await attendancemodel.find({sessionId:id,status:{ $ne: 'Present' }},{status:1,devotee:1,remark:1,creted_at:1}).find({$or: [{"devotee.name":pattern}, {"devotee.phone":pattern},{"devotee.handled_by.name":pattern}]}).skip(skip).limit(limit);
+           totalCount= await attendancemodel.find({sessionId:id,status:{ $ne: 'Present' }},{status:1,devotee:1,remark:1,creted_at:1}).find({$or: [{"devotee.name":pattern}, {"devotee.phone":pattern},{"devotee.handled_by.name":pattern}]}).countDocuments();
         }
     }
     else{
         if(status=="P"){
-           attendance=await attendancemodel.find({sessionId:id,status:"Present"},{status:1,devotee:1,remark:1}).skip(skip).limit(limit);
+           attendance=await attendancemodel.find({sessionId:id,status:"Present"},{status:1,devotee:1,remark:1,creted_at:1}).skip(skip).limit(limit);
            totalCount=await attendancemodel.find({sessionId:id,status:"Present"}).countDocuments();   
         }
         else{
-            attendance=await attendancemodel.find({sessionId:id,status:{ $ne: 'Present' }},{status:1,devotee:1,remark:1}).skip(skip).limit(limit);
+            attendance=await attendancemodel.find({sessionId:id,status:{ $ne: 'Present' }},{status:1,devotee:1,remark:1,creted_at:1}).skip(skip).limit(limit);
             totalCount=await attendancemodel.find({sessionId:id,status:{ $ne: 'Present' }}).countDocuments();
         }
     }
@@ -107,9 +107,11 @@ catch(err){
 module.exports.updateRemark=async function updateRemark(req,res){
 try{
     let obj=req.body;
-    console.log(obj);
     let id=req.params.id;
-
+    if(obj?.status=="Present"){
+      obj.creted_at=new Date();
+    }
+    console.log(obj);
     let remark=await attendancemodel.updateOne({_id:id},obj,{new:true});
     console.log(remark);
     if(remark){

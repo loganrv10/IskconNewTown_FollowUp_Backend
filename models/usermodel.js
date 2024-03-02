@@ -46,6 +46,10 @@ const userSchema=mongoose.Schema({
     comment:{
        type:String 
     },
+    registration_mode:{
+      type:String,
+      required:[true,"This Field is Required"] 
+    },
     round:{
       type:Number,
       required:[true,"This Field is Required"]

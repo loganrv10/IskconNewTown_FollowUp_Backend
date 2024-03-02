@@ -42,6 +42,10 @@ const attendanceSchema=mongoose.Schema({
         type:Number,
         required:[true,'this field is required']
     },
+    sessionBranch:{
+        type:String,
+        required:[true,'this field is required']
+    },
     devoteePhone:{
        type:String,
         required:[true,'this field is required'] 
@@ -56,7 +60,7 @@ const attendanceSchema=mongoose.Schema({
     },
     creted_at:{
       type:Date,
-      default:Date.now()
+      default:Date.now
     }
 });
 
