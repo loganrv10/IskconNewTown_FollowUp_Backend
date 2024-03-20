@@ -184,14 +184,31 @@ module.exports.updateCordinateLevel = async function updateCordinateLevel(
 //get id and name of cordinate for select option
 module.exports.CordinatezForSelect = async function CordinateForSelect(req,res) {
   try {
-    console.log("Yes");
+    let result=[];
     let user = await adminmodel.find({role:"cordinator"}, { name: 1 });
-    console.log(user);
     if (user) {
+      for(let i=0;i<user?.length;i++){
+        let cord=user[i]?._id?.toString();
+        let totalCount;
+        totalCount= await usermodel.find({"handled_by.id":cord,"mode":true}).countDocuments();
+        if(totalCount!==undefined){
+          let obj={
+            _id:user[i]?._id,
+            name:user[i]?.name,
+            count:totalCount
+          }
+          result.push(obj);
+        }
+        else{
+          res.status(422).send({
+            data:"error while fetching devotee count"
+          });
+        }
+      }
       res.status(200).send({
-        data: user,
+        data: result,
       });
-    } else {
+      } else {
       res.status(422).send({
         data: "error while fetching Volunteer",
       });

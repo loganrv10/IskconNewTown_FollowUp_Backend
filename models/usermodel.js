@@ -80,6 +80,10 @@ const userSchema=mongoose.Schema({
        type:String,
        required:[true,"This Field is Required"]
     },
+    mode:{
+      type:Boolean,
+      required:[true,"This Field is Required"]
+    },
     creted_at:{
       type:String
     }

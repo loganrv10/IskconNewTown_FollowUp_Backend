@@ -8,8 +8,8 @@ const CsvParser = require('json2csv').Parser;
 module.exports.addDevotee=async function addDevotee(req,res){ 
 try{
     let obj=req.body;
-    console.log("Yes");
     console.log(obj);
+    obj.mode=true;
     let user=await usermodel.create(obj);
     console.log(user);
     if(user){
@@ -60,8 +60,9 @@ catch(err){
 //download Devotee data as excel
 module.exports.downloadDevoteeToExcel=async function downloadDevoteeToExcel(req,res){
 try{
+    let mode=req?.query?.mode;
     let users=[];
-    let alluser=await usermodel.find({});
+    let alluser=await usermodel.find({"mode":mode});
     if(alluser && alluser.length > 0){
         alluser.forEach((user)=>{
            const {name,phone,location,currentLocation,shiftLocation,comment,round,branch,level,registered_by,handled_by,grade,status,marital_status,creted_at}=user;
@@ -111,6 +112,7 @@ try{
     console.log(req.query);
     let limit =req.query.limit?parseInt(req.query.limit):5;
     let page = req.query.page?parseInt(req.query.page):1;
+    let mode = req.query.mode; 
     let filterKey=req.query.filterkey?req.query.filterkey:null;
     let filterValue=req.query.filtervalue?req.query.filtervalue:null;
     let search=req.query.search?req.query.search:null;
@@ -133,18 +135,18 @@ try{
 
     if(search && filterQuery && filterQuery){
        const pattern = new RegExp('^' +search, 'i');
-       devotee=await usermodel.find(filterQuery).find({$or: [{name:pattern}, {phone:pattern}, {"registered_by.name":pattern},{"handled_by.name":pattern}]}).skip(skip).limit(limit);
-       totalCount= await usermodel.find(filterQuery).find({$or: [{name:pattern}, {phone:pattern}, {"registered_by.name":pattern},{"handled_by.name":pattern}]}).countDocuments();
+       devotee=await usermodel.find({"mode":mode}).find(filterQuery).find({$or: [{name:pattern}, {phone:pattern}, {"registered_by.name":pattern},{"handled_by.name":pattern}]}).skip(skip).limit(limit);
+       totalCount= await usermodel.find({"mode":mode}).find(filterQuery).find({$or: [{name:pattern}, {phone:pattern}, {"registered_by.name":pattern},{"handled_by.name":pattern}]}).countDocuments();
     }
     else if(search){
        const pattern = new RegExp('^' +search, 'i');  
        console.log(pattern);
-       devotee=await usermodel.find({$or: [{name:pattern}, {phone:pattern}, {"registered_by.name":pattern},{"handled_by.name":pattern}]}).skip(skip).limit(limit);
-       totalCount= await usermodel.find({$or: [{name:pattern}, {phone:pattern}, {"registered_by.name":pattern},{"handled_by.name":pattern}]}).countDocuments();
+       devotee=await usermodel.find({"mode":mode}).find({$or: [{name:pattern}, {phone:pattern}, {"registered_by.name":pattern},{"handled_by.name":pattern}]}).skip(skip).limit(limit);
+       totalCount= await usermodel.find({"mode":mode}).find({"mode":mode}).find({$or: [{name:pattern}, {phone:pattern}, {"registered_by.name":pattern},{"handled_by.name":pattern}]}).countDocuments();
     }
     else{
-        devotee=await usermodel.find(filterQuery).skip(skip).limit(limit);
-        totalCount= await usermodel.find(filterQuery).countDocuments(); 
+        devotee=await usermodel.find({"mode":mode}).find(filterQuery).skip(skip).limit(limit);
+        totalCount= await usermodel.find({"mode":mode}).find(filterQuery).countDocuments(); 
     }
     if(devotee){
         res.status(200).send({
@@ -193,7 +195,7 @@ module.exports.devoteeDetailsByPhone=async function devoteeDetailsByPhone(req,re
 try{
     console.log(req.query);
     let phone=req.query.phone; 
-    let user=await usermodel.find({phone:phone},{name:1,phone:1,level:1,handled_by:1,branch:1});
+    let user=await usermodel.find({phone:phone,"mode":true},{name:1,phone:1,level:1,handled_by:1,branch:1});
     if(user?.length!=0){
         res.status(200).send({  
             data:user
@@ -220,6 +222,34 @@ try{
     let levels=obj.level;
     
     let users=await usermodel.updateMany({_id:{ $in: userIds }},{ $set:{level:levels} },{new:true});
+    console.log(users);
+    if(users){
+        res.status(200).send({
+            data:users
+        });
+    }
+    else{
+        res.status(422).send({
+            data:"error while updating Devotee"
+        });
+    }
+}
+catch(err){
+   res.status(422).send({
+       data:err,
+   });
+}
+}
+
+//mark active/Inactive of multiple Devotee
+module.exports.updateDevoteeMode=async function updateDevoteeMode(req,res){
+try{
+    let obj=req.body;
+    let userIds=obj.id;
+    let mode=obj.mode;
+    
+    // let users=await usermodel.updateMany({_id:{ $in: userIds }},{ $set:{mode:mode} },{new:true});
+    let users=await usermodel.updateMany({_id:{ $in: userIds }},{ $set:{mode:mode} },{new:true});
     console.log(users);
     if(users){
         res.status(200).send({
@@ -302,6 +332,7 @@ try{
     let filterValue=req.query.filtervalue?req.query.filtervalue:null;
     let search=req.query.search?req.query.search:null;
     let cord=req.query.cord;
+    let mode=req.query.mode;
     let filterQuery;
     if(filterKey && filterKey=="level"){
         filterValue=parseInt(filterValue);
@@ -321,18 +352,18 @@ try{
 
     if(search && filterQuery && filterQuery){
        const pattern = new RegExp('^' +search, 'i');
-       devotee=await usermodel.find({"handled_by.id":cord}).find(filterQuery).find({$or: [{name:pattern}, {phone:pattern}, {"registered_by.name":pattern},{"handled_by.name":pattern}]}).skip(skip).limit(limit);
-       totalCount= await usermodel.find({"handled_by.id":cord}).find(filterQuery).find({$or: [{name:pattern}, {phone:pattern}, {"registered_by.name":pattern},{"handled_by.name":pattern}]}).countDocuments();
+       devotee=await usermodel.find({"mode":mode}).find({"handled_by.id":cord}).find(filterQuery).find({$or: [{name:pattern}, {phone:pattern}, {"registered_by.name":pattern},{"handled_by.name":pattern}]}).skip(skip).limit(limit);
+       totalCount= await usermodel.find({"mode":mode}).find({"handled_by.id":cord}).find(filterQuery).find({$or: [{name:pattern}, {phone:pattern}, {"registered_by.name":pattern},{"handled_by.name":pattern}]}).countDocuments();
     }
     else if(search){
        const pattern = new RegExp('^' +search, 'i');  
        console.log(pattern);
-       devotee=await usermodel.find({"handled_by.id":cord}).find({$or: [{name:pattern}, {phone:pattern}, {"registered_by.name":pattern},{"handled_by.name":pattern}]}).skip(skip).limit(limit);
-       totalCount= await usermodel.find({"handled_by.id":cord}).find({$or: [{name:pattern}, {phone:pattern}, {"registered_by.name":pattern},{"handled_by.name":pattern}]}).countDocuments();
+       devotee=await usermodel.find({"mode":mode}).find({"handled_by.id":cord}).find({$or: [{name:pattern}, {phone:pattern}, {"registered_by.name":pattern},{"handled_by.name":pattern}]}).skip(skip).limit(limit);
+       totalCount= await usermodel.find({"mode":mode}).find({"handled_by.id":cord}).find({$or: [{name:pattern}, {phone:pattern}, {"registered_by.name":pattern},{"handled_by.name":pattern}]}).countDocuments();
     }
     else{
-        devotee=await usermodel.find({"handled_by.id":cord}).find(filterQuery).skip(skip).limit(limit);
-        totalCount= await usermodel.find({"handled_by.id":cord}).find(filterQuery).countDocuments(); 
+        devotee=await usermodel.find({"mode":mode}).find({"handled_by.id":cord}).find(filterQuery).skip(skip).limit(limit);
+        totalCount= await usermodel.find({"mode":mode}).find({"handled_by.id":cord}).find(filterQuery).countDocuments(); 
     }
     if(devotee){
         res.status(200).send({
@@ -358,7 +389,7 @@ module.exports.allDevoteeCount=async function allDevoteeCount(req,res){
 try{
     let cord=req.query.cord;
     let totalCount;
-    totalCount= await usermodel.find({"handled_by.id":cord}).countDocuments();
+    totalCount= await usermodel.find({"handled_by.id":cord,"mode":true}).countDocuments();
     if(totalCount!==undefined){
         res.status(200).send({
             data:totalCount

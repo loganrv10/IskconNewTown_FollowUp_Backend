@@ -17,7 +17,7 @@ try{
     let session=await sessionmodel.create(obj);
     let record=[];
     if(session){
-        let devotee= await usermodel.find({level:session.level,branch:session.branch},{name:1,phone:1,handled_by:1,level:1,branch:1});
+        let devotee= await usermodel.find({"mode":true}).find({level:session.level,branch:session.branch},{name:1,phone:1,handled_by:1,level:1,branch:1});
         for(let i=0;i<devotee?.length;i++){
             let dataToInserted={
                 status:"Pending",
