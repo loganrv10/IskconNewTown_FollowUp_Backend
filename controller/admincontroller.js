@@ -71,7 +71,6 @@ module.exports.updateCordinate = async function updateCordinate(req, res) {
 module.exports.allCordinate = async function allCordinate(req, res) {
   try{
     console.log(req.query);
-    console.log("Yes")
     let limit =req.query.limit?parseInt(req.query.limit):5;
     let page = req.query.page?parseInt(req.query.page):1;
     let filterKey=req.query.filterkey?req.query.filterkey:null;
@@ -96,20 +95,33 @@ module.exports.allCordinate = async function allCordinate(req, res) {
 
     if(search && filterQuery && filterQuery){
        const pattern = new RegExp('^' +search, 'i');
-       devotee=await adminmodel.find(filterQuery).find({$or: [{name:pattern}, {phone:pattern}, {email:pattern}]}).skip(skip).limit(limit);
+       devotee=await adminmodel.find(filterQuery).find({$or: [{name:pattern}, {phone:pattern}, {email:pattern}]}).lean().skip(skip).limit(limit);
        totalCount= await adminmodel.find(filterQuery).find({$or: [{name:pattern}, {phone:pattern}, {email:pattern}]}).countDocuments();
     }
     else if(search){
        const pattern = new RegExp('^' +search, 'i');
        console.log(pattern);
-       devotee=await adminmodel.find({$or: [{name:pattern}, {phone:pattern}, {email:pattern}]}).skip(skip).limit(limit);
+       devotee=await adminmodel.find({$or: [{name:pattern}, {phone:pattern}, {email:pattern}]}).lean().skip(skip).limit(limit);
        totalCount= await adminmodel.find({$or: [{name:pattern}, {phone:pattern}, {email:pattern}]}).countDocuments();
     }
     else{
-        devotee=await adminmodel.find(filterQuery).skip(skip).limit(limit);
+        devotee=await adminmodel.find(filterQuery).lean().skip(skip).limit(limit);
         totalCount= await adminmodel.find(filterQuery).countDocuments(); 
     }
     if(devotee){
+      for(let i=0;i<devotee?.length;i++){
+        let cord=devotee[i]?._id?.toString();
+        let totalCount;
+        totalCount= await usermodel.find({"handled_by.id":cord,"mode":true}).countDocuments();
+        if(totalCount!==undefined){
+          devotee[i].count=totalCount;
+        }
+        else{
+          res.status(422).send({
+            data:"error while fetching devotee count"
+          });
+        }
+      }
         res.status(200).send({
             data:devotee,
             count:totalCount
