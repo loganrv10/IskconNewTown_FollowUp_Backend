@@ -2,6 +2,7 @@ const express=require('express');
 const attendancemodel=require('../models/attendancemodel');
 const sessionmodel=require('../models/sessionmodel');
 const usermodel = require('../models/usermodel');
+const CsvParser = require('json2csv').Parser;
 
 // mark attendance
 module.exports.createAttendance=async function createAttendance(req,res){
@@ -65,21 +66,21 @@ try{
     if(search){
        const pattern = new RegExp('^' +search, 'i');
        if(status=="P"){
-           attendance=await attendancemodel.find({sessionId:id,status:"Present"},{status:1,devotee:1,remark:1,creted_at:1}).find({$or: [{"devotee.name":pattern}, {"devotee.phone":pattern},{"devotee.handled_by.name":pattern}]}).skip(skip).limit(limit);
-           totalCount= await attendancemodel.find({sessionId:id,status:"Present"},{status:1,devotee:1,remark:1,creted_at:1}).find({$or: [{"devotee.name":pattern}, {"devotee.phone":pattern},{"devotee.handled_by.name":pattern}]}).countDocuments();
+           attendance=await attendancemodel.find({sessionId:id,status:"Present"},{status:1,devotee:1,remark:1,creted_at:1,sessionDate:1,sessionLevel:1}).find({$or: [{"devotee.name":pattern}, {"devotee.phone":pattern},{"devotee.handled_by.name":pattern}]}).skip(skip).limit(limit);
+           totalCount= await attendancemodel.find({sessionId:id,status:"Present"},{status:1,devotee:1,remark:1,creted_at:1,sessionDate:1,sessionLevel:1}).find({$or: [{"devotee.name":pattern}, {"devotee.phone":pattern},{"devotee.handled_by.name":pattern}]}).countDocuments();
         }
        else{
-           attendance=await attendancemodel.find({sessionId:id,status:{ $ne: 'Present' }},{status:1,devotee:1,remark:1,creted_at:1}).find({$or: [{"devotee.name":pattern}, {"devotee.phone":pattern},{"devotee.handled_by.name":pattern}]}).skip(skip).limit(limit);
-           totalCount= await attendancemodel.find({sessionId:id,status:{ $ne: 'Present' }},{status:1,devotee:1,remark:1,creted_at:1}).find({$or: [{"devotee.name":pattern}, {"devotee.phone":pattern},{"devotee.handled_by.name":pattern}]}).countDocuments();
+           attendance=await attendancemodel.find({sessionId:id,status:{ $ne: 'Present' }},{status:1,devotee:1,remark:1,creted_at:1,sessionDate:1,sessionLevel:1}).find({$or: [{"devotee.name":pattern}, {"devotee.phone":pattern},{"devotee.handled_by.name":pattern}]}).skip(skip).limit(limit);
+           totalCount= await attendancemodel.find({sessionId:id,status:{ $ne: 'Present' }},{status:1,devotee:1,remark:1,creted_at:1,sessionDate:1,sessionLevel:1}).find({$or: [{"devotee.name":pattern}, {"devotee.phone":pattern},{"devotee.handled_by.name":pattern}]}).countDocuments();
         }
     }
     else{
         if(status=="P"){
-           attendance=await attendancemodel.find({sessionId:id,status:"Present"},{status:1,devotee:1,remark:1,creted_at:1}).skip(skip).limit(limit);
+           attendance=await attendancemodel.find({sessionId:id,status:"Present"},{status:1,devotee:1,remark:1,creted_at:1,sessionDate:1,sessionLevel:1}).skip(skip).limit(limit);
            totalCount=await attendancemodel.find({sessionId:id,status:"Present"}).countDocuments();   
         }
         else{
-            attendance=await attendancemodel.find({sessionId:id,status:{ $ne: 'Present' }},{status:1,devotee:1,remark:1,creted_at:1}).skip(skip).limit(limit);
+            attendance=await attendancemodel.find({sessionId:id,status:{ $ne: 'Present' }},{status:1,devotee:1,remark:1,creted_at:1,sessionDate:1,sessionLevel:1}).skip(skip).limit(limit);
             totalCount=await attendancemodel.find({sessionId:id,status:{ $ne: 'Present' }}).countDocuments();
         }
     }
@@ -277,6 +278,54 @@ try{
 catch(err){
    res.status(422).send({
        data:err,
+   });
+}
+}
+
+//download Attendance data as excel
+module.exports.downloadAttendanceToExcel=async function downloadAttendanceToExcel(req,res){
+try{
+    let id=req.query.session;
+    let status=req.query.status;
+    let attendance;
+    if(status=="P"){
+        attendance=await attendancemodel.find({sessionId:id,status:"Present"},{status:1,devotee:1,remark:1,creted_at:1,sessionDate:1});
+    }
+    else{
+        attendance=await attendancemodel.find({sessionId:id,status:{ $ne: 'Present' }},{status:1,devotee:1,remark:1,creted_at:1,sessionDate:1});
+    }
+    let users=[];
+    if(attendance && attendance.length > 0){
+        attendance.forEach((user)=>{
+           const {devotee,remark,status,creted_at,sessionDate}=user;
+           users.push({
+            'Date':sessionDate,
+            'Name': devotee?.name,
+            'Phone': devotee?.phone,
+            'Remark': remark,
+            'Branch': devotee?.branch,
+            'Level': devotee?.level,
+            'Handled By': devotee?.handled_by?.name,
+            'Status':status,
+            'Marked At' :creted_at?new Date(creted_at).toLocaleString():"____",
+            });
+        })
+        const csvFields=Object.keys(users[0]);;
+        const csvParser=new CsvParser({csvFields});
+        const csvData= csvParser.parse(users);
+        res.setHeader('Content-Type','text/csv');
+        res.setHeader('Content-Disposition','attachment: filename=participantsData.csv');
+        res.status(200).send(csvData);
+    }
+    else{
+        res.status(404).send({
+            data:"No Attendance data found"
+        });
+    }
+}
+catch(err){
+   res.status(422).send({
+       data:err
    });
 }
 }

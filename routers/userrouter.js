@@ -25,14 +25,14 @@ userrouter.route('/count-devotee-cordinator').get(allDevoteeCount);
 userrouter.route('/update-grade').patch(updateDevoteeGrade);
 //get single Devotee
 userrouter.route('/:id').get(singleDevotee);
-//admin specific functionality
-userrouter.use(isAuthorised(['admin']));
-//delete devotee
-userrouter.route('/delete/:id').post(deleteDevotee);
 //update level of Multiple Devotee
 userrouter.route('/update-level').patch(updateDevoteeLevel);
 //update mode of Multiple Devotee
 userrouter.route('/update-mode').patch(updateDevoteeMode);
+//admin specific functionality
+userrouter.use(isAuthorised(['admin']));
+//delete devotee
+userrouter.route('/delete/:id').post(deleteDevotee);
 //update grade of Multiple Devotee
 userrouter.route('/assign-cordinator').patch(updateDevoteeCordinator); 
 
