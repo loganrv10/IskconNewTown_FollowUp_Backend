@@ -124,16 +124,16 @@ try{
 
     if(search && filterQuery && filterQuery){
        const pattern = new RegExp('^' +search, 'i');
-       session=await sessionmodel.find(filterQuery).find({$or: [{topic:pattern}, {speaker:pattern}]}).skip(skip).limit(limit);
+       session=await sessionmodel.find(filterQuery).find({$or: [{topic:pattern}, {speaker:pattern}]}).sort({ $natural: -1 }).skip(skip).limit(limit);
        totalCount= await sessionmodel.find(filterQuery).find({$or: [{topic:pattern}, {speaker:pattern}]}).countDocuments();
     }
     else if(search){
        const pattern = new RegExp('^' +search, 'i');
-       session=await sessionmodel.find({$or: [{topic:pattern}, {speaker:pattern}]}).skip(skip).limit(limit);
+       session=await sessionmodel.find({$or: [{topic:pattern}, {speaker:pattern}]}).sort({ $natural: -1 }).skip(skip).limit(limit);
        totalCount= await sessionmodel.find({$or: [{topic:pattern}, {speaker:pattern}]}).countDocuments();
     }
     else{
-       session=await sessionmodel.find(filterQuery).skip(skip).limit(limit);
+       session=await sessionmodel.find(filterQuery).sort({ $natural: -1 }).skip(skip).limit(limit);
        totalCount= await sessionmodel.find(filterQuery).countDocuments(); 
     }
     if(session){
