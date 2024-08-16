@@ -64,33 +64,33 @@ try{
     let users=[];
     let alluser=await usermodel.find({"mode":mode});
 
-    // for(let i=0;i<alluser.length;i++){
-    // let record=await attendancemodel.find({devoteeId:alluser[i]._id});
-    // let level1=0;
-    // let level2=0;
-    // let level3=0;
-    // if(record){
-    //     for(let i=0;i<record.length;i++){
-    //         if(record[i].sessionLevel==1 && record[i].status=="Present"){
-    //             level1=level1+1
-    //         }
-    //         else if(record[i].sessionLevel==2 && record[i].status=="Present"){
-    //             level2=level2+1
-    //         }
-    //         else if(record[i].sessionLevel==3 && record[i].status=="Present"){
-    //             level3=level3+1
-    //         }
-    //     }
-    // }
-    // alluser[i].level1 = level1;
-    // alluser[i].level2 = level2;
-    // alluser[i].level3 = level3;
-    // }
+    for(let i=0;i<alluser.length;i++){
+    let record=await attendancemodel.find({devoteeId:alluser[i]._id});
+    let level1=0;
+    let level2=0;
+    let level3=0;
+    if(record){
+        for(let i=0;i<record.length;i++){
+            if(record[i].sessionLevel==1 && record[i].status=="Present"){
+                level1=level1+1
+            }
+            else if(record[i].sessionLevel==2 && record[i].status=="Present"){
+                level2=level2+1
+            }
+            else if(record[i].sessionLevel==3 && record[i].status=="Present"){
+                level3=level3+1
+            }
+        }
+    }
+    alluser[i].level1 = level1;
+    alluser[i].level2 = level2;
+    alluser[i].level3 = level3;
+    }
     
     if(alluser && alluser.length > 0){
         alluser.forEach((user)=>{
            const {name,phone,location,currentLocation,shiftLocation,comment,round,branch,level,registered_by,handled_by,grade,status,marital_status,creted_at,
-        // level1,level2,level3
+           level1,level2,level3
             }=user;
            let registeredByName=registered_by?.name;
            let handledByName=handled_by?.name;
@@ -110,9 +110,9 @@ try{
             'Profession': status,
             'Marital Status': marital_status,
             'Joined At': creted_at,
-            // 'Level 1 (A)':level1,
-            // 'Level 2 (A)':level2,
-            // 'Level 3 (A)':level3,
+            'Level 1 (A)':level1,
+            'Level 2 (A)':level2,
+            'Level 3 (A)':level3,
             });
         })
         const csvFields=Object.keys(users[0]);;
