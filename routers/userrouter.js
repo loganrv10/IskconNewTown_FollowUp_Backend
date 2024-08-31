@@ -1,6 +1,6 @@
 const express=require('express');
 const userrouter=express.Router();
-const {addDevotee,updateDevotee,allDevotee,singleDevotee,updateDevoteeLevel,updateDevoteeGrade, devoteeDetailsByPhone, updateDevoteeCordinator, allDevoteeOfCordinator, deleteDevotee, allDevoteeCount, downloadDevoteeToExcel, updateDevoteeMode}=require('../controller/usercontroller');
+const {addDevotee,updateDevotee,allDevotee,singleDevotee,updateDevoteeLevel,updateDevoteeGrade, devoteeDetailsByPhone, updateDevoteeCordinator, allDevoteeOfCordinator, deleteDevotee, allDevoteeCount, downloadDevoteeToExcel, updateDevoteeMode, bulkUpload, updateTempDevotee}=require('../controller/usercontroller');
 const { append } = require('vary');
 const { protectuser, isAuthorised } = require('../controller/authcontroller');
 

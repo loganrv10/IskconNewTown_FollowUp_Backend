@@ -11,7 +11,12 @@ try{
     let sessionID=obj.sessionID;
     let userID=obj.userID;
     let session= await sessionmodel.findOne({_id:sessionID},{date:1,level:1,branch:1});
-    let user= await usermodel.findOne({_id:userID},{name:1,phone:1,handled_by:1,level:1,branch:1});
+    let user= await usermodel.findOne({_id:userID},{name:1,phone:1,handled_by:1,level:1,branch:1,mode:1});
+    if(user?.mode===false){
+        await usermodel.updateOne({ _id: userID }, {mode:true}, {
+          new: true,
+        });
+    }
     let checkAttendance = await attendancemodel.findOneAndUpdate({sessionDate:session.date,sessionLevel:session.level,devoteePhone:user.phone,sessionBranch:session.branch},{status:obj.status},{new:true});
     if(checkAttendance){
         return(
