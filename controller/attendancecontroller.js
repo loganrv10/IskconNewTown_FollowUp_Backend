@@ -2,6 +2,7 @@ const express=require('express');
 const attendancemodel=require('../models/attendancemodel');
 const sessionmodel=require('../models/sessionmodel');
 const usermodel = require('../models/usermodel');
+const dummyattendancemodel = require('../models/dummyattendancemodel');
 const CsvParser = require('json2csv').Parser;
 
 // mark attendance
@@ -38,6 +39,7 @@ try{
             devoteeId:user._id
             }
         let attendance=await attendancemodel.create(dataToInserted);
+        let dummyattendance = await dummyattendancemodel.create(dataToInserted);
         if(attendance){
            return(
             res.status(200).send({
