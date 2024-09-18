@@ -140,3 +140,35 @@ catch(err){
    });
 }
 }
+
+//get Last Five Remarks
+module.exports.lastFiveRemark = async function lastFiveRemark(req, res) {
+  try {
+    console.log(req.query);
+    let limit = req.query.limit ? parseInt(req.query.limit) : 5;
+    let page = req.query.page ? parseInt(req.query.page) : 1;
+    let devotee = req.query.id;
+    let skip = (page - 1) * limit;
+    let remark;
+
+    remark = await remarkmodel
+      .find({ "devotee.id": devotee })
+      .sort({ $natural: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    if (remark) {
+      res.status(200).send({
+        data: remark,
+      });
+    } else {
+      res.status(422).send({
+        data: "error while fetching remarks",
+      });
+    }
+  } catch (err) {
+    res.status(422).send({
+      data: err,
+    });
+  }
+};

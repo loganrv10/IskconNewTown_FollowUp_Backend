@@ -2,7 +2,7 @@ const express=require('express');
 const remarkrouter=express.Router();
 const { append } = require('vary');
 const { protectuser } = require('../controller/authcontroller');
-const { createRemark, updateRemark, allRemark, deleteRemark } = require('../controller/remarkcontroller');
+const { createRemark, updateRemark, allRemark, deleteRemark, lastFiveRemark } = require('../controller/remarkcontroller');
 
 //Routers
 //protected Route
@@ -15,5 +15,7 @@ remarkrouter.route('/update-remark/:id').patch(updateRemark);
 remarkrouter.route('/all-remark').get(allRemark);
 //delete single or multiple remark
 remarkrouter.route('/delete').post(deleteRemark);
+//get last five remarks
+remarkrouter.route("/last-remark").get(lastFiveRemark);
 
 module.exports=remarkrouter;
