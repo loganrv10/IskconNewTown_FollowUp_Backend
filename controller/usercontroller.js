@@ -71,51 +71,83 @@ try{
     let level1=0;
     let level2=0;
     let level3=0;
+    let level1Attendance="";
+    let level2Attendance = "";
+    let level3Attendance = "";
     if(record){
         for(let i=0;i<record.length;i++){
             if(record[i].sessionLevel==1 && record[i].status=="Present"){
-                level1=level1+1
+                level1=level1+1;
+                level1Attendance=level1Attendance+record[i].sessionDate+" , ";
             }
             else if(record[i].sessionLevel==2 && record[i].status=="Present"){
-                level2=level2+1
+                level2=level2+1;
+                level2Attendance = level2Attendance + record[i].sessionDate+" , ";
             }
             else if(record[i].sessionLevel==3 && record[i].status=="Present"){
-                level3=level3+1
+                level3=level3+1;
+                level3Attendance = level3Attendance + record[i].sessionDate+" , ";
             }
         }
     }
     alluser[i].level1 = level1;
     alluser[i].level2 = level2;
     alluser[i].level3 = level3;
+    alluser[i].level1Attendance = level1Attendance;
+    alluser[i].level2Attendance = level2Attendance;
+    alluser[i].level3Attendance = level3Attendance;
     }
     
     if(alluser && alluser.length > 0){
         alluser.forEach((user)=>{
-           const {name,phone,location,currentLocation,shiftLocation,comment,round,branch,level,registered_by,handled_by,grade,status,marital_status,creted_at,
-           level1,level2,level3
-            }=user;
+           const {
+             name,
+             phone,
+             location,
+             currentLocation,
+             shiftLocation,
+             comment,
+             round,
+             branch,
+             level,
+             registered_by,
+             handled_by,
+             grade,
+             status,
+             marital_status,
+             creted_at,
+             level1,
+             level1Attendance,
+             level2,
+             level2Attendance,
+             level3,
+             level3Attendance,
+           } = user;
            let registeredByName=registered_by?.name;
            let handledByName=handled_by?.name;
            users.push({
-            'Name': name,
-            'Phone': phone,
-            'Mother Tongue': location,
-            'Current Location': currentLocation,
-            'Shifted To': shiftLocation,
-            'Comment': comment,
-            'No. of Rounds': round,
-            'Branch': branch,
-            'Level': level,
-            'Registered By': registeredByName,
-            'Handled By': handledByName,
-            'Grade': grade,
-            'Profession': status,
-            'Marital Status': marital_status,
-            'Joined At': creted_at,
-            'Level 1 (A)':level1,
-            'Level 2 (A)':level2,
-            'Level 3 (A)':level3,
-            });
+             Name: name,
+             Phone: phone,
+             "Mother Tongue": location,
+             "Current Location": currentLocation,
+             "Shifted To": shiftLocation,
+             Comment: comment,
+             "No. of Rounds": round,
+             Branch: branch,
+             Level: level,
+             "Registered By": registeredByName,
+             "Handled By": handledByName,
+             Grade: grade,
+             Profession: status,
+             "Marital Status": marital_status,
+             "Joined At": creted_at,
+             "Level 1 (A)": level1,
+             "Level 1 Attendace (D)": level1Attendance,
+             "Level 2 (A)": level2,
+             "Level 2 Attendace (D)": level2Attendance,
+             "Level 3 (A)": level3,
+             "Level 3 Attendace (D)": level3Attendance,
+           });
         })
         const csvFields=Object.keys(users[0]);;
         const csvParser=new CsvParser({csvFields});
