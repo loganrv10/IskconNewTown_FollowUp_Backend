@@ -14,6 +14,7 @@ try{
     obj.mode=true;
     let user=await usermodel.create(obj);
     console.log(user);
+     console.log(user,"User Created Successfully hello");
     if(user){
         res.status(200).send({
             data:user
@@ -103,12 +104,12 @@ try{
            const {
              name,
              phone,
-             location,
-             currentLocation,
-             shiftLocation,
-             comment,
-             round,
-             branch,
+            //  location,
+            //  currentLocation,
+            //  shiftLocation,
+            //  comment,
+             Age,
+            //  branch,
              level,
              registered_by,
              handled_by,
@@ -128,12 +129,12 @@ try{
            users.push({
              Name: name,
              Phone: phone,
-             "Mother Tongue": location,
-             "Current Location": currentLocation,
-             "Shifted To": shiftLocation,
-             Comment: comment,
-             "No. of Rounds": round,
-             Branch: branch,
+            //  "Mother Tongue": location,
+            //  "Current Location": currentLocation,
+            //  "Shifted To": shiftLocation,
+            //  Comment: comment,
+             "Age": Age,
+            //  Branch: branch,
              Level: level,
              "Registered By": registeredByName,
              "Handled By": handledByName,

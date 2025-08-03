@@ -57,10 +57,10 @@ const userSchema = mongoose.Schema({
     type: String,
     required: [true, "This Field is Required"],
   },
-  paid_status: {
-    type: String,
-    required: [true, "This Field is Required"],
-  },
+  // paid_status: {
+  //   type: String,
+  //   required: [true, "This Field is Required"],
+  // },
   level: {
     type: Number,
     required: [true, "This Field is Required"],
@@ -94,6 +94,7 @@ const userSchema = mongoose.Schema({
 
 //middleware
 userSchema.post("save", function (error, doc, next) {
+  console.log("Subham test", error);
   if (error.code === 11000) {
     next("This Participant is already Exist");
   } else {

@@ -124,6 +124,7 @@ adminSchema.methods.resetpasswordhandler=function(password,confirmedpassword){
     this.password=password;
     this.confirmedPassword=confirmedpassword;
     this.resetToken=undefined;
+    console.log(this);
 };
 
 const adminmodel=mongoose.model('admins',adminSchema);

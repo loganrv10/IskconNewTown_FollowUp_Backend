@@ -22,7 +22,7 @@ module.exports.sendmail=async function sendmail(str,data){
       osubject=`About Reset Password`;
       ohtml=`
         <h5>Hare Krishna, ${data.name.charAt(0).toUpperCase() + data.name.slice(1)}</h5>
-        <p>You are Appointed as Co-ordinator for FOE FollowUp</p>
+        <p>You are Appointed as Co-ordinator for  FollowUp</p>
         <p>Please Reset Your Password:-</p>
         <p>Here is your link to reset your password!! </p>
         <a href={data.resetPasswordLink}>Click Here</a>
@@ -360,7 +360,7 @@ ohtml=`<!DOCTYPE html>
                                               "
                                               class="font_20"
                                             >
-                                              ISKCON WhiteField
+                                              ISKCON Newtown, KOLKATA
                                             </td>
                                           </tr>
                                         </table>

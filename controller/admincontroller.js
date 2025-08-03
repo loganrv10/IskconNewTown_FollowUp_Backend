@@ -19,20 +19,20 @@ module.exports.addCordinate = async function addCordinate(req, res) {
     let user = await adminmodel.create(obj);
     if (user) {
       const resetToken = user.createReastToken();
-      let resetPasswordLink = `${req.protocol}://iskconfollowups.netlify.app/reset-password/${resetToken}`;
-      // let resetPasswordLink = `${req.protocol}://localhost:3000/reset-password/${resetToken}`;
-      user.resetPasswordLink = resetPasswordLink;
+    let resetPasswordLink = `${req.protocol}://iskconnewtownfollowups.netlify.app/reset-password/${resetToken}`;
+   //   let resetPasswordLink = `${req.protocol}://localhost:3000/reset-password/${resetToken}`;
+     user.resetPasswordLink = resetPasswordLink;
       await user.save();
       let mailConfirmation = await sendmail("resetpasswordself",user);
       console.log(mailConfirmation);
       res.status(200).send({
         data: user,
-        mailStatus: mailConfirmation.data,
+       mailStatus: mailConfirmation.data,
       });
     } else {
       res.status(422).send({
         data: "error while adding Volunteer",
-        mailStatus: mailConfirmation.data,
+       mailStatus: mailConfirmation.data,
       });
     }
   } catch (err) {
@@ -298,8 +298,10 @@ module.exports.resetpassword = async function resetpassword(req, res) {
     const token = req.params.token;
     let { password, confirmedpassword } = req.body;
     const admin = await adminmodel.findOne({ resetToken: token });
+    console.log(admin, "Subham test");
     if (admin) {
       //resetpasswordhandler will update users password in db
+
       await admin.resetpasswordhandler(password, confirmedpassword);
       await admin.save();
       return res.status(200).send({
@@ -330,7 +332,7 @@ module.exports.sendMail = async function sendMail(req, res) {
       // let resetPasswordLink = `${req.protocol}://${req.get(
       //   "host"
       // )}/reset-password/${resetToken}`;
-      let resetPasswordLink = `${req.protocol}://iskconfollowups.netlify.app/reset-password/${resetToken}`;
+      let resetPasswordLink = `${req.protocol}://iskconnewtownfollowups.netlify.app/reset-password/${resetToken}`;
       // let resetPasswordLink = `${req.protocol}://localhost:3000/reset-password/${resetToken}`;  
       user[0].resetPasswordLink = resetPasswordLink;
       let mailConfirmation = await sendmail("resetpasswordself",user[0]);
