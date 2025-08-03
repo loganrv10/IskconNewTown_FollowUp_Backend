@@ -11,11 +11,9 @@ const corsOptions = {
   origin: ["http://localhost:3000", "https://iskconnewtownfollowups.netlify.app"],
   methods: ["GET", "POST", "PATCH", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true // ✅ Required for cookies/auth headers
 };
 
 app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // ✅ Handles preflight requests
 
 app.use(express.json());
 app.use(cookieParser());
