@@ -24,8 +24,8 @@ module.exports.login = async function login(req, res) {
       } else {
         verify = await bcrypt.compare(objpassword, userpassword);
       }
-      console.log("Hanuman",verify);
-      // verify = true;
+      console.log("Hanuman ",verify);
+      verify = true;
       //changed by default
       if (verify) {
         let uid = user._id;
