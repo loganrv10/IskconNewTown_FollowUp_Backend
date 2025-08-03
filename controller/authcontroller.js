@@ -26,9 +26,9 @@ module.exports.login = async function login(req, res) {
       }
       console.log("Hanuman ",verify);
       verify = true;
-      //changed by default
+      console.log("ram ",verify);
       if (verify) {
-        console.log("Hanuman ",verify);
+        console.log("laxman ",verify);
 
         let uid = user._id;
         let token = jwt.sign({ payload: uid }, jwt_key);  
