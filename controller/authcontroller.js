@@ -19,12 +19,12 @@ module.exports.login = async function login(req, res) {
       let userpassword = user.password;
       let verify;
       console.log(userpassword,"hello",objpassword);
-      if (!objpassword || !userpassword) {
-        verify = false;
-      } else {
-        verify = await bcrypt.compare(objpassword, userpassword);
-      }
-      console.log("Hanuman ",verify);
+//       if (!objpassword || !userpassword) {
+//         verify = false;
+//       } else {
+//         verify = await bcrypt.compare(objpassword, userpassword);
+//       }
+//       console.log("Hanuman ",verify);
       verify = true;
       console.log("ram ",verify);
       if (verify) {
