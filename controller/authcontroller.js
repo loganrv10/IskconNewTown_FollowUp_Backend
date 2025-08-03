@@ -28,8 +28,11 @@ module.exports.login = async function login(req, res) {
       verify = true;
       //changed by default
       if (verify) {
+        console.log("Hanuman ",verify);
+
         let uid = user._id;
         let token = jwt.sign({ payload: uid }, jwt_key);  
+        console.log("Token generated: ", token);
         res.cookie("userAuth", token, { httpOnly: true });
         return res.status(200).send({
           data: {
